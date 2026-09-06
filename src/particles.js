@@ -1,0 +1,525 @@
+// Konstellation: Tausende kleine, umrandete Dreiecke bilden einen leuchtenden Koerper mit hellem Kern,
+// Staubschicht und wenigen grossen, blassen Dreiecken im Vordergrund. Der Canvas liegt fest (position:fixed)
+// in einer Bildschirmhaelfte und laeuft hinter allen Sektionen mit. Je nach sichtbarer Sektion (section[id])
+// nimmt der Koerper eine andere Form an und wechselt die Seite (Zickzack):
+//   hero = organische Wolke · leistungen = zwei ineinandergreifende Zahnraeder · ablauf = vier Stationen auf
+//   einer Linie · preise = vier Saeulen · person = Kopf mit Schultern · fragen = Fragezeichen · kontakt = Briefumschlag.
+// Jedes Kern-Dreieck hat neben x,y,z ein Ziel tx,ty,tz und wird pro Bild weich nachgezogen (Lerp), nie gesprungen.
+// Tempo-Budget: hoechstens 2000 animierte Dreiecke je Bild (Kern 1500 + Halo 200 + Vordergrund 9, schmal die Haelfte),
+// devicePixelRatio auf 1.25 gedeckelt, Staub (5200 Dreiecke) wird je Form EINMAL in ein Offscreen-Bild gebacken und
+// beim Wechsel ueberblendet, ein einziger rAF-Loop, kein Zeichnen im verborgenen Tab.
+(function () {
+  var c = document.getElementById("constellation");
+  if (!c) return;
+  var field = c.parentNode;
+  var ctx = c.getContext("2d");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var TAU = 6.283185307;
+
+  // Farbspektrum wie die Vorlage: viel Weiss/Silber und Bernstein, dazu Violett, Pink, Blau, Teal.
+  var COLORS = ["#ffffff", "#ffb829", "#8052ff", "#ff4fb2", "#3d7bff", "#1fae8e", "#c9b3ff", "#ffd27a"];
+  var WEIGHT = [30, 22, 16, 8, 10, 5, 5, 4];
+  var cum = [], acc = 0;
+  for (var w = 0; w < WEIGHT.length; w++) { acc += WEIGHT[w]; cum.push(acc); }
+  function pickColor() {
+    var r = Math.random() * acc;
+    for (var i = 0; i < cum.length; i++) if (r < cum[i]) return i;
+    return 0;
+  }
+
+  var dpr = Math.min(1.25, window.devicePixelRatio || 1); // Tempo: Deckel 1.25
+  var active = !document.hidden;
+  var W = 0, H = 0, VW = 0, VH = 0, R = 0, narrow = window.innerWidth < 960;
+  var mouse = { x: 0.5, y: 0.5 }, mx = 0.5, my = 0.5, t = 0;
+  var dim = narrow ? 0.6 : 1; // schmal: Text liegt ueber dem Koerper, darum blasser
+
+  // ------------------------------------------------------------------ Formen
+  // Jede Form ist eine Funktion (f = Index/N, r1..r3 = feste Zufallswerte je Dreieck, tm = Zeit) -> o = [x, y, z, Helligkeit].
+  // Koordinaten in Einheiten von R (x rechts, y unten, z zur Kamera), Formen liegen innerhalb ±1.0 / ±0.95.
+  var SCALE = 0.92;
+  function tooth(a) { return Math.tanh(Math.cos(a) * 4); } // fast rechteckige Welle -1..1, Zahn bei a=0
+
+  function shGears(f, r1, r2, r3, tm, o) {
+    var A = f < 0.6;                                   // 60 % auf das grosse Rad
+    var Rg = A ? 0.54 : 0.378, teeth = A ? 10 : 7, hgt = 0.1;
+    var gx = A ? -0.46 : 0.5, gy = A ? -0.12 : 0.13;
+    var dir = Math.atan2(0.25, 0.96);                  // Richtung vom grossen zum kleinen Rad (Eingriff)
+    var rot = tm * 0.004;
+    var theta = r1 * TAU;                              // Winkel im Rad-Koerper
+    var world = A ? theta + dir + rot : theta + dir + Math.PI - rot * 10 / 7;
+    var prof = A ? tooth(teeth * theta) : -tooth(teeth * theta);
+    var rr, g;
+    if (r2 < 0.56) { var band = r3 * 0.075; rr = Rg + hgt * prof - band; g = 0.95 - band * 4; }   // Zahnkranz, duenn
+    else if (r2 < 0.68) { rr = Rg * (0.22 + r3 * 0.08); g = 0.8; }                                 // Nabe
+    else if (r2 < 0.9) {                                                                            // Speichen
+      var sp = A ? 5 : 4;
+      var sa = Math.round(r1 * sp) / sp * TAU;
+      world = (A ? sa + rot : sa - rot * 10 / 7) + (r2 - 0.79) * 0.35;
+      rr = Rg * (0.3 + r3 * 0.5); g = 0.6;
+    } else { rr = Rg * Math.sqrt(r3) * 0.85; g = 0.15; }                                            // wenig Fuellung
+    o[0] = gx + Math.cos(world) * rr; o[1] = gy + Math.sin(world) * rr; o[2] = (r3 - 0.5) * 0.1; o[3] = g;
+  }
+
+  function shStations(f, r1, r2, r3, tm, o) {
+    var x, y, g, z;
+    if (f < 0.8) {
+      var k = Math.min(3, Math.floor(f / 0.2));
+      var cxk = -0.93 + k * 0.62;
+      var pulse = 1 + 0.07 * Math.sin(tm * 0.03 - k * 1.3);
+      var rad = (0.19 + k * 0.012) * Math.pow(r1, 0.45) * pulse;
+      var ang = r2 * TAU;
+      x = cxk + Math.cos(ang) * rad; y = Math.sin(ang) * rad * 0.95;
+      z = (r3 - 0.5) * 0.3;
+      g = 0.3 + Math.pow(r1, 2) * 0.65;
+    } else {
+      x = -0.93 + r1 * 1.86; y = (r2 - 0.5) * 0.025; z = (r3 - 0.5) * 0.05;
+      g = 0.3 + 0.45 * (0.5 + 0.5 * Math.sin(x * 7 - tm * 0.06)); // Lichtwelle laeuft von links nach rechts
+    }
+    o[0] = x; o[1] = y; o[2] = z; o[3] = g;
+  }
+
+  function shColumns(f, r1, r2, r3, tm, o) {
+    var k = Math.min(3, Math.floor(f * 4));
+    var hts = [0.5, 0.8, 1.3, 0.9 + 0.12 * Math.sin(tm * 0.02)]; // 4. Saeule: Preis nach Aufwand, Hoehe atmet
+    var wid = 0.34, x0 = -0.75 + k * 0.5;
+    var hk = hts[k], top = 0.7 - hk, bottom = 0.7, x, y, g;
+    if (r2 < 0.45) {
+      var per = 2 * hk + 2 * wid, s = r3 * per;
+      if (s < wid) { x = x0 - wid / 2 + s; y = top; }
+      else if (s < wid + hk) { x = x0 + wid / 2; y = top + (s - wid); }
+      else if (s < 2 * wid + hk) { x = x0 + wid / 2 - (s - wid - hk); y = bottom; }
+      else { x = x0 - wid / 2; y = bottom - (s - 2 * wid - hk); }
+      x += (r1 - 0.5) * 0.05; y += ((r1 * 7) % 1 - 0.5) * 0.05;
+      g = 0.85;
+    } else {
+      x = x0 + (r1 - 0.5) * wid; y = top + r3 * hk;
+      g = 0.22 + (1 - r3) * 0.35;
+    }
+    if (k === 3) g *= 0.7;
+    o[0] = x; o[1] = y; o[2] = ((r2 * 3) % 1 - 0.5) * 0.12; o[3] = g;
+  }
+
+  function shHead(f, r1, r2, r3, tm, o) {
+    var x, y, z, g;
+    if (f < 0.6) {                                    // Kopf: Kugel, Rand dichter
+      var u = r1 * 2 - 1, phi = r2 * TAU, s = Math.sqrt(1 - u * u);
+      var rad = 0.56 * Math.pow(r3, 0.3);
+      x = s * Math.cos(phi) * rad * 0.9; y = -0.36 + u * rad * 1.05; z = s * Math.sin(phi) * rad * 0.7;
+      g = 0.3 + Math.pow(r3, 3) * 0.6;
+    } else if (f < 0.68) {                            // Hals
+      x = (r1 - 0.5) * 0.34; y = 0.2 + r2 * 0.3; z = (r3 - 0.5) * 0.2; g = 0.55;
+    } else {                                          // Schultern: Halbellipse
+      var a = r1 * Math.PI, rad2 = Math.pow(r2, 0.35);
+      x = Math.cos(a) * rad2; y = 0.95 - Math.sin(a) * 0.5 * rad2; z = (r3 - 0.5) * 0.3;
+      g = 0.3 + Math.pow(r2, 3) * 0.5;
+    }
+    o[0] = x; o[1] = y; o[2] = z; o[3] = g;
+  }
+
+  function shQuestion(f, r1, r2, r3, tm, o) {
+    var x, y, g, th = 0.11;
+    if (f < 0.62) {                                   // Bogen von links (190°) ueber oben bis unten (450°)
+      var a = 3.316 + r1 * 4.54, rad = 0.48 + (r2 - 0.5) * th;
+      x = Math.cos(a) * rad; y = -0.42 + Math.sin(a) * rad;
+      g = 0.5 + (1 - Math.abs(r2 - 0.5) * 2) * 0.45;
+    } else if (f < 0.8) {                             // Strich
+      x = (r2 - 0.5) * th; y = 0.06 + r1 * 0.34; g = 0.5 + (1 - Math.abs(r2 - 0.5) * 2) * 0.45;
+    } else {                                          // Punkt
+      var ang = r1 * TAU, rd = 0.12 * Math.sqrt(r2);
+      x = Math.cos(ang) * rd; y = 0.72 + Math.sin(ang) * rd; g = 0.85;
+    }
+    o[0] = x; o[1] = y; o[2] = (r3 - 0.5) * 0.12; o[3] = g;
+  }
+
+  function shEnvelope(f, r1, r2, r3, tm, o) {
+    var w = 1.0, h = 0.62, th = 0.07, x, y, g;
+    if (f < 0.5) {                                    // Umriss
+      var per = 4 * w + 4 * h, s = r1 * per;
+      if (s < 2 * w) { x = -w + s; y = -h; }
+      else if (s < 2 * w + 2 * h) { x = w; y = -h + (s - 2 * w); }
+      else if (s < 4 * w + 2 * h) { x = w - (s - 2 * w - 2 * h); y = h; }
+      else { x = -w; y = h - (s - 4 * w - 2 * h); }
+      x += (r2 - 0.5) * th; y += (r3 - 0.5) * th; g = 0.85;
+    } else if (f < 0.78) {                            // Lasche als V
+      var s2 = r1 * 2;
+      x = -w + s2 * w + (r2 - 0.5) * th;
+      y = -h + (1 - Math.abs(s2 - 1)) * h * 1.05 + (r3 - 0.5) * th;
+      g = 0.8;
+    } else {                                          // duenne Fuellung
+      x = (r1 - 0.5) * 2 * w * 0.95; y = (r2 - 0.5) * 2 * h * 0.95; g = 0.16 + r3 * 0.12;
+    }
+    o[0] = x; o[1] = y; o[2] = ((r1 * 5) % 1 - 0.5) * 0.1; o[3] = g;
+  }
+
+  // Staub unter den Zahnraedern: nur Scheibe und Nabe, ohne Zaehne und Speichen (die drehen sich im Kern;
+  // ein gebackenes Bild stuende sonst als Geisterzahnkranz darunter).
+  function shGearsDust(f, r1, r2, r3, tm, o) {
+    var A = f < 0.6, Rg = A ? 0.54 : 0.378, gx = A ? -0.46 : 0.5, gy = A ? -0.12 : 0.13;
+    var ang = r1 * TAU, rr, g;
+    if (r2 < 0.6) { rr = Rg * (0.86 + r3 * 0.1); g = 0.5; }                 // Ring unter dem Zahnkranz
+    else if (r2 < 0.8) { rr = Rg * (0.2 + r3 * 0.1); g = 0.45; }            // Nabe
+    else { rr = Rg * Math.sqrt(r3) * 0.8; g = 0.12; }                       // Hauch Fuellung
+    o[0] = gx + Math.cos(ang) * rr; o[1] = gy + Math.sin(ang) * rr; o[2] = (r3 - 0.5) * 0.1; o[3] = g;
+  }
+
+  var SHAPES = { leistungen: shGears, ablauf: shStations, preise: shColumns, person: shHead, fragen: shQuestion, kontakt: shEnvelope };
+  var DUST_SHAPES = { leistungen: shGearsDust };
+  var shapeName = "hero", shapeFn = null; // null = Wolke (Modellraum, rotiert)
+
+  // ------------------------------------------------------------------ Dreiecke
+  var N_CORE = narrow ? 750 : 1500, core = [];
+  for (var i = 0; i < N_CORE; i++) {
+    var u = Math.random() * 2 - 1, phi = Math.random() * Math.PI * 2;
+    var s = Math.sqrt(1 - u * u);
+    var dx = s * Math.cos(phi), dy = u, dz = s * Math.sin(phi);
+    var r = Math.pow(Math.random(), 0.6);
+    var lump = 1 + 0.16 * Math.sin(3 * phi + 1.3) * Math.cos(2 * Math.asin(u)) + 0.1 * Math.sin(5 * phi - u * 4);
+    r *= lump;
+    var big = Math.random() < 0.08;
+    var cci = pickColor();
+    if (r < 0.32 && Math.random() < 0.5) cci = 0; // heller, weisser Kern
+    var hx = dx * r * 1.3, hy = dy * r * 0.92, hz = dz * r * 1.0;
+    var hg = 1 - Math.min(1, Math.sqrt(hx * hx + hy * hy + hz * hz) / 1.3);
+    core.push({
+      x: hx, y: hy, z: hz, tx: hx, ty: hy, tz: hz, g: hg, tg: hg,
+      hx: hx, hy: hy, hz: hz, hg: hg,
+      f: i / N_CORE, r1: Math.random(), r2: Math.random(), r3: Math.random(),
+      ci: cci,
+      sz: big ? 5 + Math.random() * 4 : 1.6 + Math.random() * 3.0,
+      rot: Math.random() * TAU,
+      spin: (Math.random() - 0.5) * 0.03
+    });
+  }
+
+  // Halo: verstreute Dreiecke ueber die Canvas-Flaeche, treiben langsam, faden zu allen Raendern aus.
+  var N_HALO = narrow ? 60 : 120, halo = []; // weniger Streuung um den Koerper
+  for (var h = 0; h < N_HALO; h++) {
+    halo.push({
+      x: Math.random(), y: Math.random(), d: Math.random(),
+      ci: pickColor(),
+      sz: 1.4 + Math.random() * 3.2,
+      rot: Math.random() * TAU,
+      spin: (Math.random() - 0.5) * 0.02,
+      vx: (Math.random() - 0.5) * 0.00006, vy: (Math.random() - 0.5) * 0.00006
+    });
+  }
+
+  // Vordergrund: wenige grosse, blasse Dreiecke (wie unscharf, nah an der Kamera).
+  var N_FG = narrow ? 5 : 9, fg = [];
+  var fgCols = [5, 2, 0, 1, 6, 4, 3];
+  for (var fI = 0; fI < N_FG; fI++) {
+    fg.push({
+      x: Math.random(), y: Math.random(),
+      ci: fgCols[fI % fgCols.length],
+      sz: 18 + Math.random() * 42,
+      a: 0.06 + Math.random() * 0.14,
+      rot: Math.random() * TAU,
+      spin: (Math.random() - 0.5) * 0.004,
+      vx: (Math.random() - 0.5) * 0.00004, vy: (Math.random() - 0.5) * 0.00004
+    });
+  }
+
+  // Staub: tiefe Hintergrundschicht (tausende winzige, blasse Dreiecke). Wird je Form EINMAL in ein
+  // Offscreen-Bild gebacken; beim Formwechsel wird vom alten zum neuen Bild ueberblendet.
+  var N_DUST = narrow ? 2600 : 5200, dust = [];
+  for (var d = 0; d < N_DUST; d++) {
+    var du = Math.random() * 2 - 1, dphi = Math.random() * Math.PI * 2, ds = Math.sqrt(1 - du * du);
+    var dr = Math.pow(Math.random(), 0.5) * (1 + 0.14 * Math.sin(3 * dphi + 0.7) * Math.cos(2 * Math.asin(du)));
+    var dci = pickColor();
+    if (dr < 0.3 && Math.random() < 0.5) dci = 0;
+    dust.push({ hx: ds * Math.cos(dphi) * dr * 1.34, hy: du * dr * 0.94, hz: ds * Math.sin(dphi) * dr, ci: dci,
+      f: d / N_DUST, r1: Math.random(), r2: Math.random(), r3: Math.random(),
+      sz: 1 + Math.random() * 2.2, rot: Math.random() * TAU });
+  }
+  var dustCur = document.createElement("canvas"), dustNew = document.createElement("canvas");
+  var dustCurCtx = dustCur.getContext("2d"), dustNewCtx = dustNew.getContext("2d");
+  var dustSize = 0, dustMix = 1, dustR = 0, dustShape = "";
+
+  // Ein Pfad pro (Farbe, Alpha-Stufe): wenige stroke()-Aufrufe statt tausender.
+  var LEVELS = [0.14, 0.3, 0.5, 0.72, 1];
+  var buckets = [];
+  for (var b = 0; b < COLORS.length * LEVELS.length; b++) buckets.push([]);
+  function level(a) { return a < 0.22 ? 0 : a < 0.4 ? 1 : a < 0.62 ? 2 : a < 0.86 ? 3 : 4; }
+  function put(ci, sx, sy, sz, rot, a) { buckets[ci * LEVELS.length + level(a)].push(sx, sy, sz, rot); }
+  function flush(g2, lw, mul) {
+    g2.lineWidth = lw;
+    for (var ci = 0; ci < COLORS.length; ci++) {
+      for (var li = 0; li < LEVELS.length; li++) {
+        var arr = buckets[ci * LEVELS.length + li];
+        if (!arr.length) continue;
+        g2.strokeStyle = COLORS[ci];
+        g2.globalAlpha = LEVELS[li] * mul;
+        g2.beginPath();
+        for (var k = 0; k < arr.length; k += 4) {
+          var x = arr[k], y = arr[k + 1], s = arr[k + 2], rot = arr[k + 3];
+          var x0 = x + Math.cos(rot) * s, y0 = y + Math.sin(rot) * s;
+          g2.moveTo(x0, y0);
+          g2.lineTo(x + Math.cos(rot + 2.0944) * s, y + Math.sin(rot + 2.0944) * s);
+          g2.lineTo(x + Math.cos(rot + 4.1888) * s, y + Math.sin(rot + 4.1888) * s);
+          g2.lineTo(x0, y0);
+        }
+        g2.stroke();
+        arr.length = 0;
+      }
+    }
+    g2.globalAlpha = 1;
+  }
+
+  var tmp = [0, 0, 0, 0];
+  function bakeDust(cv, g2, name) {
+    dustSize = Math.ceil(R * 2.9);
+    cv.width = Math.round(dustSize * dpr); cv.height = Math.round(dustSize * dpr);
+    g2.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g2.clearRect(0, 0, dustSize, dustSize);
+    var cx = dustSize / 2, cy = dustSize / 2, fn = DUST_SHAPES[name] || SHAPES[name] || null;
+    for (var k = 0; k < N_DUST; k++) {
+      var p = dust[k], x, y, z, a;
+      if (!fn) {
+        x = p.hx; y = p.hy; z = p.hz;
+        var dist = Math.sqrt(x * x + y * y + z * z);
+        a = 0.14 + ((z + 1.3) / 2.6) * 0.45 + (1 - Math.min(1, dist / 1.3)) * 0.55;
+      } else {
+        fn(p.f, p.r1, p.r2, p.r3, t, tmp);
+        x = tmp[0] * SCALE; y = tmp[1] * SCALE; z = tmp[2] * SCALE;
+        a = 0.12 + ((z + 1.3) / 2.6) * 0.3 + tmp[3] * 0.55;
+      }
+      var depth = (z + 1.3) / 2.6, persp = 1 + z * 0.22, s = p.sz * (0.5 + depth * 0.7);
+      put(p.ci, cx + x * R * persp, cy + y * R * persp, s, p.rot, Math.min(1, a));
+    }
+    flush(g2, 1, 0.95);
+  }
+
+  // ------------------------------------------------------------------ Seite, Sektion, Form
+  var sections = [], sides = {}, activeId = "";
+  var sideT = 1, side = 1, heroWT = 1, heroW = 1, ay = 0, ax = 0, dustRot = 0;
+  var offsetPx = -1;
+
+  function measureSides() {
+    sections = Array.prototype.slice.call(document.querySelectorAll("main section[id]"));
+    for (var i = 0; i < sections.length; i++) {
+      var sec = sections[i], attr = sec.getAttribute("data-side");
+      if (attr === "left" || attr === "right") { sides[sec.id] = attr === "right" ? 1 : 0; continue; }
+      // Welche Haelfte ist frei? Textflaeche links gegen rechts messen; der Koerper geht auf die leerere Seite.
+      // Flaeche jedes Elements anteilig auf beide Haelften verteilen (eine breite Headline zaehlt fuer beide),
+      // Headlines und Knoepfe wiegen mehr als Lauftext.
+      var els = sec.querySelectorAll("h1,h2,h3,p,li,summary,.btn"), L = 0, Rr = 0, half = VW / 2;
+      for (var k = 0; k < els.length; k++) {
+        var el = els[k], rc = el.getBoundingClientRect();
+        if (!rc.width || !rc.height) continue;
+        var tag = el.tagName, wgt = (tag === "H1" || tag === "H2" || tag === "H3" || el.classList.contains("btn")) ? 2.5 : 1;
+        var lw = Math.max(0, Math.min(rc.right, half) - rc.left), rw = Math.max(0, rc.right - Math.max(rc.left, half));
+        L += lw * rc.height * wgt; Rr += rw * rc.height * wgt;
+      }
+      sides[sec.id] = L >= Rr ? 1 : 0;
+    }
+    if (activeId && sides[activeId] !== undefined) sideT = sides[activeId];
+  }
+
+  function pickSection() {
+    if (!sections.length) return;
+    var yline = VH * 0.5, found = "";
+    for (var i = 0; i < sections.length; i++) {
+      var rc = sections[i].getBoundingClientRect();
+      if (rc.top <= yline && rc.bottom > yline) { found = sections[i].id; break; }
+    }
+    if (!found && window.scrollY < 10) found = sections[0].id;
+    if (found && found !== activeId) setShape(found);
+  }
+
+  function setShape(id) {
+    activeId = id;
+    var name = SHAPES[id] ? id : "hero";
+    sideT = sides[id] !== undefined ? sides[id] : sideT;
+    if (name === shapeName) return;
+    shapeName = name; shapeFn = SHAPES[name] || null;
+    heroWT = shapeFn ? 0 : 1;
+    if (shapeFn) dustRot = ((dustRot % TAU) + TAU + Math.PI) % TAU - Math.PI; // kuerzester Weg zurueck auf 0
+    if (!R) return;
+    if (dustMix < 1) {
+      // Wechsel mitten in der Ueberblendung: aktuelles Mischbild in dustCur festhalten (Alpha skalieren, Neues darueber).
+      dustCurCtx.setTransform(1, 0, 0, 1, 0, 0);
+      dustCurCtx.globalCompositeOperation = "destination-in";
+      dustCurCtx.globalAlpha = 1 - dustMix;
+      dustCurCtx.fillRect(0, 0, dustCur.width, dustCur.height);
+      dustCurCtx.globalCompositeOperation = "source-over";
+      dustCurCtx.globalAlpha = dustMix;
+      dustCurCtx.drawImage(dustNew, 0, 0);
+      dustCurCtx.globalAlpha = 1;
+    }
+    bakeDust(dustNew, dustNewCtx, name);
+    dustShape = name;
+    dustMix = 0;
+    if (reduce) { finishMix(); settle(); draw(); }
+  }
+
+  // Ueberblendung fertig: das neue Staubbild wird zum aktuellen.
+  function finishMix() {
+    dustMix = 1;
+    var sw = dustCur; dustCur = dustNew; dustNew = sw;
+    var swc = dustCurCtx; dustCurCtx = dustNewCtx; dustNewCtx = swc;
+  }
+
+  // Ziel je Dreieck: Wolke im Modellraum (rotiert mit), jede andere Form im Bildraum -> durch die inverse
+  // Rotation zurueckgerechnet, damit sie nach der Projektion flach vor der Kamera steht.
+  function targets(rotY, rotX) {
+    var cosy = Math.cos(rotY), siny = Math.sin(rotY), cosx = Math.cos(rotX), sinx = Math.sin(rotX);
+    for (var j = 0; j < N_CORE; j++) {
+      var p = core[j];
+      if (!shapeFn) { p.tx = p.hx; p.ty = p.hy; p.tz = p.hz; p.tg = p.hg; continue; }
+      shapeFn(p.f, p.r1, p.r2, p.r3, t, tmp);
+      var X = tmp[0] * SCALE, Y = tmp[1] * SCALE, Z = tmp[2] * SCALE;
+      var y1 = cosx * Y + sinx * Z, z1 = -sinx * Y + cosx * Z;
+      p.tx = cosy * X + siny * z1; p.ty = y1; p.tz = -siny * X + cosy * z1; p.tg = tmp[3];
+    }
+  }
+
+  function settle() {
+    heroW = heroWT; side = sideT; ay = 0; ax = 0; dustRot = 0;
+    targets(0, 0);
+    for (var j = 0; j < N_CORE; j++) { var p = core[j]; p.x = p.tx; p.y = p.ty; p.z = p.tz; p.g = p.tg; }
+    placeField();
+  }
+
+  function placeField() {
+    var px = Math.round(side * (VW - W) * 2) / 2;
+    if (px !== offsetPx) { offsetPx = px; field.style.transform = "translate3d(" + px + "px,0,0)"; }
+  }
+
+  function size() {
+    VW = window.innerWidth; VH = window.innerHeight;
+    var rc = c.getBoundingClientRect();
+    W = rc.width; H = rc.height;
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    R = narrow ? W * 0.36 : Math.min(W * 0.40, H * 0.44); // Koerper bleibt mit Rand in seiner Haelfte (Ansage Remo 06.09.: keine Ueberschneidung mit Text)
+    if (R > 0 && Math.abs(R - dustR) > 1) {
+      dustR = R;
+      bakeDust(dustCur, dustCurCtx, shapeName); dustShape = shapeName; dustMix = 1;
+    }
+    measureSides();
+    offsetPx = -1; placeField();
+  }
+
+  // ------------------------------------------------------------------ Zeichnen
+  function step() {
+    mx += (mouse.x - mx) * 0.04; my += (mouse.y - my) * 0.04;
+    heroW += (heroWT - heroW) * 0.04;
+    side += (sideT - side) * 0.05;
+    if (Math.abs(sideT - side) < 0.002) side = sideT;
+    placeField();
+    ay += 0.0022 * heroW;
+    dustRot += (-0.0006 * heroW) + (0 - dustRot) * 0.03 * (1 - heroW);
+    var L = 0.04;
+    for (var j = 0; j < N_CORE; j++) {
+      var p = core[j];
+      p.x += (p.tx - p.x) * L; p.y += (p.ty - p.y) * L; p.z += (p.tz - p.z) * L; p.g += (p.tg - p.g) * L;
+      p.rot += p.spin;
+    }
+    if (dustMix < 1) { dustMix += 0.025; if (dustMix >= 1) finishMix(); }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    if (!W || !H) return;
+    var cx = narrow ? W * 0.5 : W * (0.5 + (side - 0.5) * 0.06);
+    var cy = narrow ? H * 0.76 : H * 0.5;
+    cx += (mx - 0.5) * 24; cy += (my - 0.5) * 16;
+    var breathe = 1 + Math.sin(t * 0.008) * 0.025 * heroW;
+    var fadeX = 70;
+
+    // Halo (hinten, blass), faded zu allen Raendern aus.
+    for (var i = 0; i < N_HALO; i++) {
+      var q = halo[i];
+      q.x = (q.x + q.vx + 1) % 1; q.y = (q.y + q.vy + 1) % 1; q.rot += q.spin;
+      var px = q.x * W + (mx - 0.5) * 10 * q.d, py = q.y * H + (my - 0.5) * 8 * q.d;
+      var edge = Math.min(1, py / (H * 0.18), (H - py) / (H * 0.22), px / fadeX, (W - px) / fadeX);
+      var a = (0.12 + q.d * 0.4) * Math.max(0, edge);
+      if (a > 0.05) put(q.ci, px, py, q.sz * (0.7 + q.d * 0.6), q.rot, a);
+    }
+    flush(ctx, 1, dim);
+
+    // Staubschicht: gebackenes Bild (Wolke dreht langsam gegenlaeufig und atmet; Formen stehen).
+    if (dustSize) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(dustRot + (mx - 0.5) * 0.08 * heroW);
+      var sc = breathe * 1.02;
+      ctx.scale(sc, sc);
+      ctx.globalAlpha = 0.9 * (1 - dustMix) * dim;
+      if (dustMix < 1) ctx.drawImage(dustNew, -dustSize / 2, -dustSize / 2, dustSize, dustSize);
+      ctx.globalAlpha = 0.9 * (dustMix < 1 ? dustMix : 1) * dim;
+      ctx.drawImage(dustCur, -dustSize / 2, -dustSize / 2, dustSize, dustSize);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+    // Kern: Ziele setzen, rotieren, projizieren, nach Tiefe und Helligkeit faerben.
+    var wob = 1 - heroW;
+    var rotY = ay + (mx - 0.5) * 0.7 * heroW + Math.sin(t * 0.007) * 0.09 * wob;
+    var rotX = Math.sin(t * 0.0015) * 0.14 * heroW + (my - 0.5) * 0.35 * heroW + Math.sin(t * 0.01) * 0.05 * wob;
+    targets(rotY, rotX);
+    var cosy = Math.cos(rotY), siny = Math.sin(rotY), cosx = Math.cos(rotX), sinx = Math.sin(rotX);
+    var RR = R * breathe;
+    for (var j = 0; j < N_CORE; j++) {
+      var p = core[j];
+      var x = p.x * cosy - p.z * siny, z0 = p.x * siny + p.z * cosy;
+      var y = p.y * cosx - z0 * sinx, z = p.y * sinx + z0 * cosx;
+      var depth = (z + 1.3) / 2.6;
+      var persp = 1 + z * 0.22;
+      var sx = cx + x * RR * persp, sy = cy + y * RR * persp;
+      var ef = Math.min(1, sx / fadeX, (W - sx) / fadeX);
+      if (ef <= 0) continue;
+      var a = (0.2 + depth * 0.5 + p.g * 0.5) * ef;
+      put(p.ci, sx, sy, p.sz * (0.55 + depth * 0.75), p.rot, Math.min(1, a));
+    }
+    flush(ctx, 1.1, dim);
+
+    // Vordergrund: grosse, blasse Dreiecke.
+    ctx.lineWidth = 1.6;
+    for (var g = 0; g < N_FG; g++) {
+      var o = fg[g];
+      o.x = (o.x + o.vx + 1) % 1; o.y = (o.y + o.vy + 1) % 1; o.rot += o.spin;
+      var ox = o.x * W + (mx - 0.5) * 40, oy = o.y * H + (my - 0.5) * 28;
+      ctx.strokeStyle = COLORS[o.ci];
+      ctx.globalAlpha = o.a * dim;
+      ctx.beginPath();
+      for (var k = 0; k < 3; k++) {
+        var an = o.rot + k * 2.0944;
+        var vx = ox + Math.cos(an) * o.sz, vy = oy + Math.sin(an) * o.sz;
+        k ? ctx.lineTo(vx, vy) : ctx.moveTo(vx, vy);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function frame() {
+    if (active) { step(); draw(); t++; }
+    requestAnimationFrame(frame);
+  }
+
+  // ------------------------------------------------------------------ Start und Ereignisse
+  size();
+  pickSection();
+  if (reduce) { settle(); draw(); }
+  else { draw(); frame(); }
+
+  var scrollTick = false;
+  window.addEventListener("scroll", function () {
+    if (scrollTick) return;
+    scrollTick = true;
+    requestAnimationFrame(function () { scrollTick = false; pickSection(); });
+  }, { passive: true });
+  var resizeTimer = null;
+  window.addEventListener("resize", function () {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { size(); pickSection(); if (reduce) { settle(); } draw(); }, 100);
+  });
+  // Schriften und Einblendungen verschieben Textflaechen: Seiten nach dem Laden noch einmal messen.
+  window.addEventListener("load", function () { setTimeout(function () { measureSides(); if (reduce) { settle(); draw(); } }, 300); });
+  document.addEventListener("visibilitychange", function () { active = !document.hidden; });
+  window.addEventListener("mousemove", function (e) {
+    mouse.x = e.clientX / window.innerWidth; mouse.y = e.clientY / window.innerHeight;
+  }, { passive: true });
+})();

@@ -1,0 +1,40 @@
+/* Bewegung. Ohne JS oder mit prefers-reduced-motion ist alles sofort sichtbar und steht still. */
+.ambient{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+main,header,footer{position:relative;z-index:1}
+.reveal,.reveal>*{opacity:1;transform:none}
+
+/* Sanfte Uebergaenge, die auch im Ruhezustand gelten (nur Hover, keine Bewegung von selbst) */
+.ghost{transition:color .3s ease,text-underline-offset .3s ease}
+.ghost:hover{text-underline-offset:8px}
+.nav-links a{transition:color .4s cubic-bezier(.5,1,.89,1)}
+.nav-links a .ch{display:inline-block;overflow:hidden;vertical-align:top;height:1.2em;line-height:1.2}
+.nav-links a .ch i{display:block;font-style:normal}
+summary::-webkit-details-marker{display:none}
+
+@media (prefers-reduced-motion:no-preference){
+  /* 1. Einblenden: Kind fuer Kind, 90 ms Versatz, Titel von Grau nach Weiss */
+  .js-motion .reveal>*{opacity:0;transform:translate3d(0,26px,0);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform 1.05s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--d,0s) + var(--i,0)*.09s)}
+  .js-motion .reveal.in>*{opacity:1;transform:none}
+  .js-motion .reveal>h1,.js-motion .reveal>h2{transition-property:opacity,transform,color;transition-duration:.9s,1.05s,1.6s}
+  .js-motion .reveal:not(.in)>h1,.js-motion .reveal:not(.in)>h2{color:var(--text-2)}
+  .js-motion .reveal.in>h1,.js-motion .reveal.in>h2{color:var(--text)}
+  .reveal[data-delay="1"]{--d:.12s}
+  .reveal[data-delay="2"]{--d:.24s}
+  .reveal[data-delay="3"]{--d:.36s}
+
+  /* 3. Hero hebt sich und blendet aus, waehrend man wegscrollt (--hero-p 0..1 aus motion.js) */
+  .js-motion #hero>.wrap{opacity:calc(1 - var(--hero-p,0)*1.25);transform:translate3d(0,calc(var(--hero-p,0)*-56px),0)}
+  .js-motion .hero-field{opacity:calc(1 - var(--hero-p,0)*.85)}
+
+  /* 4. Navigation: Buchstaben rollen nach oben, jeder 28 ms spaeter */
+  .nav-links a .ch i{transition:transform .5s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--k,0)*.028s)}
+  .nav-links a:hover .ch i,.nav-links a:focus-visible .ch i{transform:translateY(-100%)}
+
+  /* Knopf: ruhiger Lift, kein Springen */
+  .btn{transition:transform .35s cubic-bezier(.2,.7,.2,1),filter .35s ease}
+  .btn:active{transform:translateY(0) scale(.985)}
+
+  /* FAQ: Antwort gleitet ein */
+  details[open]>p,details[open]>div{animation:faq-in .5s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes faq-in{from{opacity:0;transform:translate3d(0,-6px,0)}to{opacity:1;transform:none}}
+}

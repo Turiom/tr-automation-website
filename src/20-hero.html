@@ -1,0 +1,42 @@
+<main>
+<style>
+#hero{position:relative;padding:112px 0 140px;min-height:calc(100vh - 100px);display:flex;align-items:center}
+#hero .wrap{width:100%}
+/* Der Partikel-Koerper liegt fest in einer Bildschirmhaelfte (64vw breit, damit die Wolke nicht hart am Rand
+   abbricht) und laeuft hinter allen Sektionen mit; particles.js schiebt ihn per transform von links nach rechts.
+   z-index -1 innerhalb von main (Stacking-Kontext aus motion.css): unter dem Text, ueber dem Hintergrundfeld.
+   Seite je Sektion: particles.js misst, welche Haelfte weniger Text traegt, und stellt den Koerper dorthin;
+   eine Sektion kann das mit data-side="left" oder data-side="right" am <section> fest vorgeben. */
+.hero-field{position:fixed;top:0;bottom:0;left:0;width:50vw;pointer-events:none;z-index:-1;will-change:transform}
+#konstellation-feld.hero-field{opacity:1}
+.hero-field canvas{width:100%;height:100%;display:block}
+.hero-copy{position:relative;z-index:1;max-width:760px}
+.hero-copy h1{max-width:12ch}
+.hero-copy .hero-label{display:block;margin-top:44px;font-size:14px;font-weight:600;letter-spacing:.025em;text-transform:uppercase;color:var(--saffron)}
+.hero-copy .body{margin-top:18px;max-width:480px}
+.hero-actions{margin-top:36px;display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.hero-actions .btn{font-weight:600;text-transform:uppercase;letter-spacing:.025em;padding:14.4px 20px}
+.hero-actions .ghost{color:var(--text-2)}
+@media (max-width:960px){
+  #hero{min-height:0;padding:40px 0 52vw;display:block}
+  .hero-field{width:100vw}
+  .hero-copy .hero-label{margin-top:28px}
+  .hero-actions{margin-top:28px}
+}
+</style>
+<div class="hero-field" id="konstellation-feld" aria-hidden="true">
+  <canvas id="constellation"></canvas>
+</div>
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-copy reveal">
+      <h1 class="display">Weniger<br>Papierkram.<br>Mehr Betrieb.</h1>
+      <span class="hero-label">KI-Automationen aus einer Hand. Für KMU und Handwerk.</span>
+      <p class="body">Anfragen, Offerten, Termine, Mails, Rechnungen: Ich automatisiere den Büroalltag von KMU und Handwerksbetrieben im Raum Solothurn. Dazu Website, Google und Impressum. Und wer will, lernt im eigenen Betrieb, mit KI selbst weiterzubauen.</p>
+      <div class="hero-actions">
+        <a class="btn" href="tel:+41799697349">Kostenloses Erstgespräch</a>
+        <a class="ghost" href="#ablauf">So funktioniert es</a>
+      </div>
+    </div>
+  </div>
+</section>

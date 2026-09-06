@@ -1,0 +1,28 @@
+<style>
+#leistungen{padding-top:var(--gap-section);padding-bottom:var(--gap-section)}
+#leistungen h2{max-width:14ch}
+#leistungen .lead{max-width:30em;color:var(--text-3)}
+.leistungen{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:48px}
+.leistungen li{display:grid;grid-template-columns:28px 1fr;gap:16px;align-items:start}
+.leistungen .h-xs{color:var(--text);margin-bottom:8px}
+.leistungen .was{max-width:30em;color:var(--text-2)}
+@media (max-width:960px){
+  .leistungen{gap:36px}
+}
+</style>
+<section id="leistungen" data-side="right" class="wrap">
+  <div class="two col-l">
+    <div class="stack reveal">
+      <p class="label iris">Leistungen</p>
+      <h2 class="h-lg">Fünf Dinge, die Ihnen Zeit zurückgeben.</h2>
+      <p class="lead">Alles aus einer Hand: die Automation, die Website, Google, Impressum, und die Einführung, damit Sie es danach selbst können. Ein Ansprechpartner, eine Rechnung, eine Nummer.</p>
+    </div>
+    <ul class="leistungen reveal" data-delay="1">
+      <li><span class="tri"></span><div><p class="h-xs">Automation im Büro</p><p class="was">Eine Anfrage kommt rein und wird zur sortierten Mail mit allen Angaben. Aus dem Formular entsteht die Offerte. Der Kunde bekommt einen Terminvorschlag statt eines Rückrufs. Rechnungen gehen raus, ohne dass jemand tippt.</p></div></li>
+      <li><span class="tri saffron"></span><div><p class="h-xs">Website</p><p class="was">Auf dem Handy zuerst gebaut, in zehn Sekunden verstanden. Telefon und Mail zum Antippen, Leistungen, Öffnungszeiten, Anfahrt, Ihre eigenen Fotos.</p></div></li>
+      <li><span class="tri teal"></span><div><p class="h-xs">Google und Auffindbarkeit</p><p class="was">Unternehmensprofil, Ort, Leistungen, Suchbegriffe, sauber eingerichtet. Damit Kunden aus der Region Sie finden. Ohne Versprechen auf Platz eins.</p></div></li>
+      <li><span class="tri blue"></span><div><p class="h-xs">Einführung in die Arbeit mit Claude</p><p class="was">Ein Workshop bei Ihnen im Betrieb zeigt, was mit KI heute geht, und Ihr Team lernt, Automationen selbst zu bauen. Statt für jede Kleinigkeit jemanden zu brauchen.</p></div></li>
+      <li><span class="tri magenta"></span><div><p class="h-xs">Impressum und Datenschutz</p><p class="was">Nach Schweizer Recht, ohne Textbausteine von irgendwo. Kein Tracking, keine Cookie-Wand, wenn es nicht nötig ist.</p></div></li>
+    </ul>
+  </div>
+</section>

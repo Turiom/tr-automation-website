@@ -1,0 +1,204 @@
+{
+  "siteName": "TR Automation",
+  "baseUrl": "https://tr-automation.ch",
+  "lastmod": "2026-09-04",
+  "title": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Solothurn",
+  "description": "Anfragen, Offerten, Termine und Mails automatisiert, dazu Website, Google-Auffindbarkeit und eine Einführung in die Arbeit mit Claude, damit Ihr Team es selbst kann. Für KMU und Handwerk im Raum Solothurn.",
+  "jsonLd": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": [
+          "LocalBusiness",
+          "ProfessionalService"
+        ],
+        "@id": "https://tr-automation.ch/#unternehmen",
+        "name": "TR Automation – KI-Automationen, Website und SEO",
+        "alternateName": "TR Automation, Remo Walliser",
+        "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand, zu festen Preisen und Lieferfristen.",
+        "url": "https://tr-automation.ch/",
+        "telephone": "+41799697349",
+        "email": "remo.walliser@bluewin.ch",
+        "founder": {
+          "@id": "https://tr-automation.ch/#person"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Bahnhofstrasse 14",
+          "postalCode": "4571",
+          "addressLocality": "Lüterkofen",
+          "addressRegion": "SO",
+          "addressCountry": "CH"
+        },
+        "areaServed": [
+          {
+            "@type": "City",
+            "name": "Solothurn"
+          },
+          {
+            "@type": "City",
+            "name": "Biberist"
+          },
+          {
+            "@type": "City",
+            "name": "Gerlafingen"
+          },
+          {
+            "@type": "City",
+            "name": "Lüterkofen"
+          },
+          {
+            "@type": "City",
+            "name": "Bern"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Kanton Solothurn"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Kanton Bern"
+          }
+        ],
+        "knowsLanguage": "de-CH",
+        "currenciesAccepted": "CHF",
+        "priceRange": "CHF 1'200 – CHF 3'900",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Pakete",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "name": "Visitenkarte",
+              "description": "Eine Seite, Handy zuerst, Telefon und Mail antippbar, Leistungen, Öffnungszeiten, Anfahrt, Impressum und Datenschutz. Lieferung in 7 Arbeitstagen.",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Website Visitenkarte",
+                "serviceType": "Webdesign"
+              },
+              "priceSpecification": {
+                "@type": "PriceSpecification",
+                "price": "1200",
+                "priceCurrency": "CHF",
+                "valueAddedTaxIncluded": false
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Betrieb",
+              "description": "Bis 5 Seiten, Kontaktformular mit Foto-Anhang, Referenzen, Google-Unternehmensprofil, Such-Grundlagen. Lieferung in 14 Arbeitstagen.",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Website Betrieb",
+                "serviceType": "Webdesign und SEO"
+              },
+              "priceSpecification": {
+                "@type": "PriceSpecification",
+                "price": "2400",
+                "priceCurrency": "CHF",
+                "valueAddedTaxIncluded": false
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Betrieb + Automation",
+              "description": "Paket Betrieb plus ein automatisierter Ablauf nach Wahl (sortierte Anfrage-Mail, Terminanfrage mit Vorschlag, Offert-Vorlage aus Formular), Einführung vor Ort, 30 Tage Anpassungen. Lieferung in 21 Arbeitstagen.",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Website Betrieb mit KI-Automation",
+                "serviceType": "Webdesign und KI-Automation"
+              },
+              "priceSpecification": {
+                "@type": "PriceSpecification",
+                "price": "3900",
+                "priceCurrency": "CHF",
+                "valueAddedTaxIncluded": false
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Automation allein",
+              "description": "KI-Automation für einen bestehenden Betrieb ohne neue Website. Preis nach Absprache und Aufwand.",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "KI-Automation",
+                "serviceType": "KI-Automation"
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "KI-Einführung im Betrieb",
+              "description": "Workshop im Betrieb (Halbtag oder Tag): was mit Claude möglich ist, und wie das Team Automationen selbst baut. Preis nach Absprache und Aufwand.",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "KI-Einführung und Schulung",
+                "serviceType": "KI-Schulung"
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Betreuung",
+              "description": "Updates, Sicherung und Änderungen bis 1 Stunde pro Monat. Monatlich kündbar.",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Website-Betreuung",
+                "serviceType": "Wartung"
+              },
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "80",
+                "priceCurrency": "CHF",
+                "unitText": "Monat",
+                "valueAddedTaxIncluded": false
+              }
+            }
+          ]
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://tr-automation.ch/#person",
+        "name": "Remo Walliser",
+        "jobTitle": "KI-Automation und Webentwicklung für KMU",
+        "telephone": "+41799697349",
+        "email": "remo.walliser@bluewin.ch",
+        "url": "https://tr-automation.ch/",
+        "worksFor": {
+          "@id": "https://tr-automation.ch/#unternehmen"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Bahnhofstrasse 14",
+          "postalCode": "4571",
+          "addressLocality": "Lüterkofen",
+          "addressRegion": "SO",
+          "addressCountry": "CH"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://tr-automation.ch/#website",
+        "url": "https://tr-automation.ch/",
+        "name": "TR Automation",
+        "inLanguage": "de-CH",
+        "publisher": {
+          "@id": "https://tr-automation.ch/#unternehmen"
+        }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://tr-automation.ch/#startseite",
+        "url": "https://tr-automation.ch/",
+        "name": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Solothurn",
+        "isPartOf": {
+          "@id": "https://tr-automation.ch/#website"
+        },
+        "about": {
+          "@id": "https://tr-automation.ch/#unternehmen"
+        },
+        "inLanguage": "de-CH",
+        "dateModified": "2026-09-04"
+      }
+    ]
+  }
+}

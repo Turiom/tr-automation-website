@@ -1,0 +1,57 @@
+<style>
+#preise{padding-top:var(--gap-section);padding-bottom:var(--gap-section)}
+#preise .two{align-items:start}
+#preise .intro{max-width:26ch}
+#preise .lead{max-width:34ch;margin-top:8px}
+.preisliste{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:64px}
+.preisliste li{display:flex;flex-direction:column;gap:10px}
+.preisliste .preis{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 18px;font-size:48px;line-height:1.1;letter-spacing:-1.68px;color:var(--text)}
+.preisliste .preis .ab{font-size:24px;letter-spacing:-0.48px;color:var(--text-3)}
+.preisliste .preis .frist{font-size:14px;letter-spacing:0.025em;text-transform:uppercase;font-weight:400;color:var(--text-2)}
+.preisliste .was{max-width:30em;color:var(--text-3)}
+.preisliste .stern{color:var(--text-2);font-size:15px;line-height:1.5}
+#preise .rahmen{margin-top:96px;max-width:44em;color:var(--text-2)}
+#preise .rahmen b{font-weight:400;color:var(--text)}
+@media (max-width:960px){
+  .preisliste{gap:44px}
+  .preisliste .preis{font-size:42px;letter-spacing:-1.3px}
+  #preise .rahmen{margin-top:56px}
+}
+</style>
+<section id="preise" data-side="right" class="wrap">
+  <div class="two col-l">
+    <div class="stack reveal">
+      <p class="label iris">Preise</p>
+      <h2 class="h-lg intro">Drei feste Preise. Zwei nach Absprache.</h2>
+      <p class="muted lead">Pakete in Franken, ohne MwSt, mit fester Lieferzeit in Arbeitstagen. Automation und Einführung richten sich nach Ihrem Betrieb, darum nach Absprache und Aufwand. Hälfte bei Auftrag, Hälfte wenn es läuft.</p>
+    </div>
+    <ul class="preisliste reveal" data-delay="1">
+      <li>
+        <p class="label saffron">Visitenkarte</p>
+        <p class="preis num"><span>CHF 1'200</span><span class="frist">7 Arbeitstage</span></p>
+        <p class="was">Eine Seite. Telefon und Mail zum Antippen, Leistungen, Öffnungszeiten, Anfahrt, Impressum.</p>
+      </li>
+      <li>
+        <p class="label saffron">Betrieb</p>
+        <p class="preis num"><span>CHF 2'400</span><span class="frist">14 Arbeitstage</span></p>
+        <p class="was">Bis fünf Seiten, Kontaktformular mit Foto-Anhang, Referenzen, Google-Unternehmensprofil, Such-Grundlagen.</p>
+      </li>
+      <li>
+        <p class="label saffron">Betrieb + Automation</p>
+        <p class="preis num"><span>CHF 3'900</span><span class="frist">21 Arbeitstage</span></p>
+        <p class="was">Alles aus Betrieb plus ein automatisierter Ablauf nach Wahl. Einführung vor Ort, 30 Tage Anpassungen.</p>
+      </li>
+      <li>
+        <p class="label saffron">Automation allein</p>
+        <p class="preis num"><span>Nach Absprache</span><span class="frist">Preis nach Aufwand</span></p>
+        <p class="was">Für Betriebe, die ihre Website behalten und nur den Papierkram loswerden wollen. Wir schauen Ihren Ablauf gemeinsam an; der Preis steht fest, bevor Sie zusagen.</p>
+      </li>
+      <li>
+        <p class="label saffron">KI-Einführung im Betrieb</p>
+        <p class="preis num"><span>Nach Absprache</span><span class="frist">Halbtag oder Tag</span></p>
+        <p class="was">Workshop bei Ihnen, am eigenen Beispiel: was mit Claude heute möglich ist, und wie Ihr Team Automationen selbst baut. Danach bleibe ich als Sparringpartner erreichbar.</p>
+      </li>
+    </ul>
+  </div>
+  <p class="rahmen reveal" data-delay="2"><b>Betreuung</b> freiwillig, CHF 80 pro Monat: Updates, Sicherung, kleine Änderungen bis eine Stunde. Monatlich kündbar. <b>Zusatzarbeiten</b> CHF 140 pro Stunde, immer vorher angesagt. <b>Domain</b> rund CHF 15 pro Jahr auf Ihren Namen, Hosting ab CHF 0.</p>
+</section>

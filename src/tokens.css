@@ -1,0 +1,22 @@
+:root{
+  --canvas:#000000;
+  --text:#ffffff;
+  --text-2:#9a9a9a;
+  --text-3:#bdbdbd;
+  --iris:#8052ff;
+  --saffron:#ffb829;
+  --teal:#158463;
+  --magenta:#ff4fb2;
+  --blue:#3d7bff;
+  --radius:24px;
+  --radius-pill:22.5px;
+  --max:1280px;
+  --gap-section:120px;
+  --gap-block:60px;
+  --font:"Inter","PPNeueMontreal",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --track-display:-0.04em;
+  --track-label:0.025em;
+  --w-body:200;
+  --w-head:400;
+  --w-label:600;
+}

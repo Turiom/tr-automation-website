@@ -1,0 +1,233 @@
+// Bewegung der Seite. Vier Dinge, alle leise:
+//  1. Einblenden beim Scrollen: jeder Block (.reveal) kommt gestaffelt Kind fuer Kind, Titel von Grau nach Weiss.
+//  2. Hintergrund-Partikelfeld (#ambient): verstreute, umrandete Dreiecke in drei Tiefen, treiben langsam,
+//     laufen beim Scrollen je nach Tiefe unterschiedlich schnell mit (Parallaxe) und weichen der Maus leicht aus.
+//  3. Hero blendet beim Wegscrollen aus und hebt sich leicht (CSS-Variable --hero-p).
+//  4. Navigation: Buchstaben rollen beim Hover nach oben (Struktur wird hier gebaut, Optik in motion.css).
+// prefers-reduced-motion: keine Einblendung, keine Parallaxe, Feld wird einmal gezeichnet und steht.
+// Ruht, sobald der Tab nicht sichtbar ist. Nichts hier ist noetig, damit die Seite lesbar bleibt.
+(function () {
+  var doc = document.documentElement;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
+  doc.classList.add("js-motion");
+  if (reduce) doc.classList.add("reduce-motion");
+
+  // ---------- 1. Einblenden beim Scrollen ----------
+  var reveals = document.querySelectorAll(".reveal");
+  for (var r = 0; r < reveals.length; r++) {
+    var kids = reveals[r].children;
+    for (var k = 0; k < kids.length; k++) kids[k].style.setProperty("--i", String(Math.min(k, 8)));
+  }
+  function showAll() { for (var i = 0; i < reveals.length; i++) reveals[i].classList.add("in"); }
+  if (reduce || !("IntersectionObserver" in window)) {
+    showAll();
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) { entries[i].target.classList.add("in"); io.unobserve(entries[i].target); }
+      }
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    for (var j = 0; j < reveals.length; j++) io.observe(reveals[j]);
+    // Sicherheitsnetz: was nach 2.5 s noch nicht sichtbar wurde (z. B. sehr hohe Bloecke), kommt trotzdem.
+    setTimeout(function () {
+      for (var i = 0; i < reveals.length; i++) {
+        var b = reveals[i].getBoundingClientRect();
+        if (b.top < window.innerHeight && b.bottom > 0) reveals[i].classList.add("in");
+      }
+    }, 2500);
+  }
+
+  // ---------- 4. Navigation: Buchstaben-Rolle ----------
+  // Jeder Link bekommt pro Buchstabe ein .ch mit zwei Kopien; die zweite rollt beim Hover von unten nach.
+  // Der Link behaelt seinen Text als aria-label, die Buchstaben sind fuer Screenreader unsichtbar.
+  var navLinks = document.querySelectorAll(".nav-links a");
+  for (var n = 0; n < navLinks.length; n++) {
+    var a = navLinks[n];
+    if (a.children.length) continue;
+    var text = a.textContent.replace(/\s+/g, " ").trim();
+    if (!text || text.length > 24) continue;
+    a.setAttribute("aria-label", text);
+    a.textContent = "";
+    var frag = document.createDocumentFragment();
+    for (var c = 0; c < text.length; c++) {
+      var ch = document.createElement("span");
+      ch.className = "ch";
+      ch.setAttribute("aria-hidden", "true");
+      ch.style.setProperty("--k", String(c));
+      var glyph = text.charAt(c) === " " ? " " : text.charAt(c);
+      var i1 = document.createElement("i"); i1.textContent = glyph;
+      var i2 = document.createElement("i"); i2.textContent = glyph;
+      ch.appendChild(i1); ch.appendChild(i2);
+      frag.appendChild(ch);
+    }
+    a.appendChild(frag);
+  }
+
+  // ---------- 3. Hero blendet beim Wegscrollen aus ----------
+  var hero = document.getElementById("hero");
+  var heroP = -1;
+  function updateHero() {
+    if (!hero || reduce) return;
+    var span = Math.max(300, window.innerHeight * 0.85);
+    var p = Math.min(1, Math.max(0, window.scrollY / span));
+    p = Math.round(p * 200) / 200;
+    if (p !== heroP) { heroP = p; hero.style.setProperty("--hero-p", String(p)); }
+  }
+
+  // ---------- 2. Hintergrund-Partikelfeld ----------
+  var cv = document.getElementById("ambient");
+  var ctx = cv && cv.getContext ? cv.getContext("2d") : null;
+  var W = 0, H = 0, dpr = 1;
+  var COLORS = ["#ffffff", "#ffb829", "#8052ff", "#ff4fb2", "#3d7bff", "#1fae8e", "#c9b3ff", "#ffd27a"];
+  var WEIGHT = [64, 10, 8, 2, 4, 2, 2, 1]; // Ruhe: Farbe gehoert dem Koerper, der Hintergrund ist Silber
+  var LEVELS = [0.05, 0.09, 0.14, 0.2, 0.28];
+  var dots = [], bigs = [];
+  var mouse = { x: 0.5, y: 0.5 }, mx = 0.5, my = 0.5;
+  var sy = 0, running = false, dirty = true, hasMouse = false;
+
+  function pickColor() {
+    var sum = 0, i;
+    for (i = 0; i < WEIGHT.length; i++) sum += WEIGHT[i];
+    var v = Math.random() * sum;
+    for (i = 0; i < WEIGHT.length; i++) { v -= WEIGHT[i]; if (v < 0) return i; }
+    return 0;
+  }
+  function seed() {
+    dots = []; bigs = [];
+    var area = W * H;
+    var N = Math.max(30, Math.min(80, Math.round(area / 22000))); // ein Drittel des alten Felds
+    for (var i = 0; i < N; i++) {
+      var d = Math.random();                       // Tiefe: 0 fern .. 1 nah
+      // leichte Haeufung nach rechts, wie bei der Vorlage; links bleibt es ruhiger fuer den Text
+      var x = Math.random() < 0.55 ? Math.random() : 1 - Math.pow(Math.random(), 1.7);
+      dots.push({
+        x: x, y: Math.random(), d: d, ci: pickColor(),
+        sz: 1.8 + d * 4.6 + Math.random() * 1.2,
+        a: 0.1 + d * 0.42,
+        rot: Math.random() * 6.2832, spin: (Math.random() - 0.5) * 0.012,
+        vx: (Math.random() - 0.5) * 0.00005, vy: (Math.random() - 0.5) * 0.00004
+      });
+    }
+    var NB = 0; // keine grossen Vordergrund-Dreiecke mehr, sie stoeren beim Lesen
+    var bigCols = [5, 2, 0, 1, 6, 4, 3];
+    for (var b = 0; b < NB; b++) {
+      bigs.push({
+        x: Math.random(), y: Math.random(), ci: bigCols[b % bigCols.length],
+        sz: 22 + Math.random() * 40, a: 0.05 + Math.random() * 0.09,
+        rot: Math.random() * 6.2832, spin: (Math.random() - 0.5) * 0.0025,
+        vx: (Math.random() - 0.5) * 0.00003, vy: (Math.random() - 0.5) * 0.00003
+      });
+    }
+  }
+  function size() {
+    if (!cv) return;
+    dpr = Math.min(1.25, window.devicePixelRatio || 1); // Tempo-Budget laut BRIEF
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + "px"; cv.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!dots.length || Math.abs(dots.length - Math.round(W * H / 6200)) > 60) seed();
+    dirty = true;
+  }
+  function level(a) { return a < 0.12 ? 0 : a < 0.2 ? 1 : a < 0.32 ? 2 : a < 0.48 ? 3 : 4; }
+  function draw(animate) {
+    if (!ctx || !W || !H) return;
+    ctx.clearRect(0, 0, W, H);
+    if (animate) { mx += (mouse.x - mx) * 0.045; my += (mouse.y - my) * 0.045; }
+    var ox = hasMouse ? (mx - 0.5) : 0, oy = hasMouse ? (my - 0.5) : 0;
+    var buckets = [];
+    for (var q = 0; q < COLORS.length * LEVELS.length; q++) buckets.push([]);
+    for (var i = 0; i < dots.length; i++) {
+      var p = dots[i];
+      if (animate) { p.x = (p.x + p.vx + 1) % 1; p.y = (p.y + p.vy + 1) % 1; p.rot += p.spin; }
+      var par = 0.04 + p.d * 0.22;               // nahe Dreiecke laufen beim Scrollen schneller mit
+      var yy = (((p.y * H - sy * par) % H) + H) % H;
+      var px = p.x * W - ox * (8 + p.d * 26), py = yy - oy * (6 + p.d * 18);
+      buckets[p.ci * LEVELS.length + level(p.a)].push(px, py, p.sz, p.rot);
+    }
+    ctx.lineWidth = 1;
+    for (var ci = 0; ci < COLORS.length; ci++) {
+      for (var li = 0; li < LEVELS.length; li++) {
+        var arr = buckets[ci * LEVELS.length + li];
+        if (!arr.length) continue;
+        ctx.strokeStyle = COLORS[ci];
+        ctx.globalAlpha = LEVELS[li];
+        ctx.beginPath();
+        for (var k = 0; k < arr.length; k += 4) {
+          var x = arr[k], y = arr[k + 1], s = arr[k + 2], rot = arr[k + 3];
+          var x0 = x + Math.cos(rot) * s, y0 = y + Math.sin(rot) * s;
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x + Math.cos(rot + 2.0944) * s, y + Math.sin(rot + 2.0944) * s);
+          ctx.lineTo(x + Math.cos(rot + 4.1888) * s, y + Math.sin(rot + 4.1888) * s);
+          ctx.lineTo(x0, y0);
+        }
+        ctx.stroke();
+      }
+    }
+    ctx.lineWidth = 1.5;
+    for (var b = 0; b < bigs.length; b++) {
+      var o = bigs[b];
+      if (animate) { o.x = (o.x + o.vx + 1) % 1; o.y = (o.y + o.vy + 1) % 1; o.rot += o.spin; }
+      var by = (((o.y * H - sy * 0.3) % H) + H) % H;
+      var bx = o.x * W - ox * 44, byy = by - oy * 30;
+      ctx.strokeStyle = COLORS[o.ci];
+      ctx.globalAlpha = o.a;
+      ctx.beginPath();
+      for (var t = 0; t < 3; t++) {
+        var an = o.rot + t * 2.0944;
+        var vx = bx + Math.cos(an) * o.sz, vy = byy + Math.sin(an) * o.sz;
+        t ? ctx.lineTo(vx, vy) : ctx.moveTo(vx, vy);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    dirty = false;
+  }
+  function loop() {
+    if (!running) return;
+    draw(true);
+    raf(loop);
+  }
+  function start() {
+    if (reduce || running || !ctx) return;
+    running = true;
+    raf(loop);
+  }
+  function stop() { running = false; }
+
+  // ---------- Ereignisse ----------
+  var ticking = false;
+  function onScroll() {
+    sy = window.scrollY || 0;
+    if (ticking) return;
+    ticking = true;
+    raf(function () { ticking = false; updateHero(); if (reduce && ctx) draw(false); });
+  }
+  var resizeTimer = null;
+  function onResize() {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { size(); updateHero(); if (!running) draw(false); }, 120);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onResize);
+  if (!reduce && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    window.addEventListener("mousemove", function (e) {
+      hasMouse = true;
+      mouse.x = e.clientX / window.innerWidth; mouse.y = e.clientY / window.innerHeight;
+    }, { passive: true });
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) stop(); else start();
+  });
+
+  if (ctx) {
+    size();
+    sy = window.scrollY || 0;
+    draw(false);            // erstes Bild sofort, nicht erst beim ersten Animationsframe
+    if (!reduce) start();
+  }
+  updateHero();
+  doc.setAttribute("data-motion", reduce ? "still" : "on");
+})();
