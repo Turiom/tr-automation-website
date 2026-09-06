@@ -1,12 +1,21 @@
+<style>
+.kontakt-wege{display:grid;grid-template-columns:max-content 1fr;gap:14px 28px;align-items:baseline}
+.kontakt-wege .sub{font-weight:400}
+@media (max-width:520px){.kontakt-wege{grid-template-columns:1fr;gap:6px}.kontakt-wege .label{margin-top:10px}}
+</style>
 <section id="kontakt" data-side="right" class="wrap" style="padding-top:calc(var(--gap-section) / 2);padding-bottom:calc(var(--gap-section) / 2)">
   <div class="two col-l">
     <div class="stack reveal" style="gap:36px">
       <p class="label iris">Kontakt</p>
       <h2 class="h-lg" style="max-width:12ch">Rufen Sie an. Oder schicken Sie mir Ihre heutige Seite.</h2>
-      <div style="display:flex;gap:24px 48px;flex-wrap:wrap;align-items:center;margin-top:8px">
-        <a class="btn" href="tel:+41799697349" style="text-transform:uppercase;font-weight:600;letter-spacing:0.025em">Erstgespräch, 30 Minuten, kostenlos</a>
-        <a class="sub num" href="tel:+41799697349">079 969 73 49</a>
-        <a class="sub" href="mailto:remo.walliser@bluewin.ch">remo.walliser@bluewin.ch</a>
+      <div class="stack" style="gap:26px;margin-top:8px">
+        <a class="btn" href="tel:+41799697349" style="text-transform:uppercase;font-weight:600;letter-spacing:0.025em;align-self:flex-start">Erstgespräch, 30 Minuten, kostenlos</a>
+        <div class="kontakt-wege">
+          <span class="label" style="color:var(--text-3);font-weight:600">Telefon</span>
+          <a class="sub num" href="tel:+41799697349">079 969 73 49</a>
+          <span class="label" style="color:var(--text-3);font-weight:600">E-Mail</span>
+          <a class="sub" href="mailto:remo.walliser@bluewin.ch">remo.walliser@bluewin.ch</a>
+        </div>
       </div>
       <p class="muted" style="max-width:36em">Rückruf innert eines Arbeitstags. Vor Ort im Raum Solothurn, Biberist, Gerlafingen, Lüterkofen und Bern.</p>
     </div>

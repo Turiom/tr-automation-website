@@ -99,21 +99,33 @@
     o[0] = x; o[1] = y; o[2] = ((r2 * 3) % 1 - 0.5) * 0.12; o[3] = g;
   }
 
+  // Kopf im Seitenprofil (Blick nach rechts, zum Text): Stirn, Nase, Lippen, Kinn, Hals, Schulteransatz.
+  // Umriss als Polygon; 45 % der Dreiecke liegen als dichtes Band auf der Kontur, der Rest fuellt die Flaeche
+  // ueber einen Faecher vom Kopfzentrum aus (Wurzel fuer gleichmaessige Dichte).
+  var HEAD = [
+    [-0.10,-0.92],[ 0.14,-0.90],[ 0.33,-0.80],[ 0.43,-0.64],[ 0.46,-0.46],[ 0.43,-0.36],[ 0.46,-0.28],
+    [ 0.50,-0.20],[ 0.60,-0.08],[ 0.58,-0.03],[ 0.50, 0.00],[ 0.51, 0.06],[ 0.55, 0.12],[ 0.50, 0.17],
+    [ 0.53, 0.24],[ 0.53, 0.31],[ 0.44, 0.40],[ 0.31, 0.50],[ 0.28, 0.66],[ 0.34, 0.78],[ 0.62, 0.90],
+    [ 0.70, 0.96],[-0.80, 0.96],[-0.40, 0.80],[-0.30, 0.66],[-0.31, 0.50],[-0.50, 0.32],[-0.64, 0.10],
+    [-0.67,-0.18],[-0.62,-0.48],[-0.48,-0.74],[-0.28,-0.88]
+  ];
+  var HEAD_C = [-0.10, -0.28], HEAD_N = HEAD.length;
   function shHead(f, r1, r2, r3, tm, o) {
-    var x, y, z, g;
-    if (f < 0.6) {                                    // Kopf: Kugel, Rand dichter
-      var u = r1 * 2 - 1, phi = r2 * TAU, s = Math.sqrt(1 - u * u);
-      var rad = 0.56 * Math.pow(r3, 0.3);
-      x = s * Math.cos(phi) * rad * 0.9; y = -0.36 + u * rad * 1.05; z = s * Math.sin(phi) * rad * 0.7;
-      g = 0.3 + Math.pow(r3, 3) * 0.6;
-    } else if (f < 0.68) {                            // Hals
-      x = (r1 - 0.5) * 0.34; y = 0.2 + r2 * 0.3; z = (r3 - 0.5) * 0.2; g = 0.55;
-    } else {                                          // Schultern: Halbellipse
-      var a = r1 * Math.PI, rad2 = Math.pow(r2, 0.35);
-      x = Math.cos(a) * rad2; y = 0.95 - Math.sin(a) * 0.5 * rad2; z = (r3 - 0.5) * 0.3;
-      g = 0.3 + Math.pow(r2, 3) * 0.5;
+    var i = Math.min(HEAD_N - 1, Math.floor(r1 * HEAD_N)), j = (i + 1) % HEAD_N;
+    var ax = HEAD[i][0], ay = HEAD[i][1], bx = HEAD[j][0], by = HEAD[j][1];
+    var px = ax + (bx - ax) * r2, py = ay + (by - ay) * r2, x, y, g;
+    if (f < 0.45) {                                   // Kontur-Band, leicht nach innen versetzt
+      var nx = -(by - ay), ny = (bx - ax), nl = Math.sqrt(nx * nx + ny * ny) || 1;
+      var d = (r3 - 0.7) * 0.07;                      // -0.05 .. +0.02 (mehr nach innen)
+      x = px + nx / nl * d; y = py + ny / nl * d;
+      g = 0.7 + (1 - Math.abs(r3 - 0.7)) * 0.3;
+    } else {                                          // Faecher-Fuellung vom Zentrum
+      var k = Math.sqrt(r3);
+      x = HEAD_C[0] + (px - HEAD_C[0]) * k; y = HEAD_C[1] + (py - HEAD_C[1]) * k;
+      g = 0.25 + Math.pow(k, 3) * 0.5;
     }
-    o[0] = x; o[1] = y; o[2] = z; o[3] = g;
+    var h = (r1 * 7.31 + r2 * 3.17 + r3 * 1.93) % 1;
+    o[0] = x; o[1] = y; o[2] = (h - 0.5) * 0.14; o[3] = g;
   }
 
   function shQuestion(f, r1, r2, r3, tm, o) {
