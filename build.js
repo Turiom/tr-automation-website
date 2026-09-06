@@ -58,4 +58,11 @@ ${["/", "/impressum.html", "/datenschutz.html"].map(u => `  <url><loc>${seo.base
 </urlset>
 `);
 write("robots.txt", `User-agent: *\nAllow: /\nSitemap: ${seo.baseUrl}/sitemap.xml\n`);
+// Statische Dateien (Bilder fuer og:image usw.) aus src/assets nach dist/assets kopieren
+const assetsSrc = path.join(here, "src", "assets");
+if (fs.existsSync(assetsSrc)) {
+  const assetsOut = path.join(out, "assets");
+  fs.mkdirSync(assetsOut, { recursive: true });
+  for (const f of fs.readdirSync(assetsSrc)) fs.copyFileSync(path.join(assetsSrc, f), path.join(assetsOut, f));
+}
 console.log("gebaut:", fs.readdirSync(out).join(", "));
