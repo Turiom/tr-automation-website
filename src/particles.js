@@ -99,46 +99,45 @@
     o[0] = x; o[1] = y; o[2] = ((r2 * 3) % 1 - 0.5) * 0.12; o[3] = g;
   }
 
-  // Kopf im Seitenprofil (Blick nach rechts, zum Text): Stirn, Nase, Lippen, Kinn, Hals, Schulteransatz.
-  // Umriss als Polygon; 45 % der Dreiecke liegen als dichtes Band auf der Kontur, der Rest fuellt die Flaeche
-  // ueber einen Faecher vom Kopfzentrum aus (Wurzel fuer gleichmaessige Dichte).
+  // Kopf im Seitenprofil als schlichte Bueste (Blick nach rechts, zum Text): Stirn, Nase, Lippen, Kinn, Hals.
+  // Das Polygon ist vom Zentrum aus sternfoermig (jeder Punkt vom Zentrum sichtbar), sonst entstehen schwarze Keile.
+  // 35 % der Dreiecke als klare Kontur, der Rest als leichte Flaeche.
   var HEAD = [
-    [-0.10,-0.92],[ 0.14,-0.90],[ 0.33,-0.80],[ 0.43,-0.64],[ 0.46,-0.46],[ 0.43,-0.36],[ 0.46,-0.28],
-    [ 0.50,-0.20],[ 0.60,-0.08],[ 0.58,-0.03],[ 0.50, 0.00],[ 0.51, 0.06],[ 0.55, 0.12],[ 0.50, 0.17],
-    [ 0.53, 0.24],[ 0.53, 0.31],[ 0.44, 0.40],[ 0.31, 0.50],[ 0.28, 0.66],[ 0.34, 0.78],[ 0.62, 0.90],
-    [ 0.70, 0.96],[-0.80, 0.96],[-0.40, 0.80],[-0.30, 0.66],[-0.31, 0.50],[-0.50, 0.32],[-0.64, 0.10],
-    [-0.67,-0.18],[-0.62,-0.48],[-0.48,-0.74],[-0.28,-0.88]
+    [-0.08,-0.90],[ 0.16,-0.86],[ 0.34,-0.74],[ 0.44,-0.56],[ 0.46,-0.40],[ 0.42,-0.31],[ 0.47,-0.22],
+    [ 0.60,-0.10],[ 0.63,-0.04],[ 0.50, 0.01],[ 0.51, 0.07],[ 0.56, 0.13],[ 0.49, 0.18],[ 0.54, 0.26],
+    [ 0.50, 0.34],[ 0.36, 0.44],[ 0.26, 0.52],[ 0.26, 0.95],[-0.22, 0.95],[-0.22, 0.55],[-0.44, 0.35],
+    [-0.60, 0.12],[-0.64,-0.18],[-0.58,-0.48],[-0.44,-0.72],[-0.26,-0.86]
   ];
-  var HEAD_C = [-0.10, -0.28], HEAD_N = HEAD.length;
+  var HEAD_C = [-0.12, -0.30], HEAD_N = HEAD.length;
   function shHead(f, r1, r2, r3, tm, o) {
     var i = Math.min(HEAD_N - 1, Math.floor(r1 * HEAD_N)), j = (i + 1) % HEAD_N;
     var ax = HEAD[i][0], ay = HEAD[i][1], bx = HEAD[j][0], by = HEAD[j][1];
     var px = ax + (bx - ax) * r2, py = ay + (by - ay) * r2, x, y, g;
-    if (f < 0.45) {                                   // Kontur-Band, leicht nach innen versetzt
+    if (f < 0.5) {                                    // Kontur, schmal, leicht nach innen
       var nx = -(by - ay), ny = (bx - ax), nl = Math.sqrt(nx * nx + ny * ny) || 1;
-      var d = (r3 - 0.7) * 0.07;                      // -0.05 .. +0.02 (mehr nach innen)
+      var d = (r3 - 0.75) * 0.05;
       x = px + nx / nl * d; y = py + ny / nl * d;
-      g = 0.7 + (1 - Math.abs(r3 - 0.7)) * 0.3;
-    } else {                                          // Faecher-Fuellung vom Zentrum
+      g = 0.85;
+    } else {                                          // leichte Flaeche, gleichmaessig
       var k = Math.sqrt(r3);
       x = HEAD_C[0] + (px - HEAD_C[0]) * k; y = HEAD_C[1] + (py - HEAD_C[1]) * k;
-      g = 0.25 + Math.pow(k, 3) * 0.5;
+      g = 0.08 + k * 0.14;
     }
     var h = (r1 * 7.31 + r2 * 3.17 + r3 * 1.93) % 1;
-    o[0] = x; o[1] = y; o[2] = (h - 0.5) * 0.14; o[3] = g;
+    o[0] = x; o[1] = y; o[2] = (h - 0.5) * 0.12; o[3] = g;
   }
 
   function shQuestion(f, r1, r2, r3, tm, o) {
-    var x, y, g, th = 0.11;
+    var x, y, g, th = 0.22;
     if (f < 0.62) {                                   // Bogen von links (190°) ueber oben bis unten (450°)
       var a = 3.316 + r1 * 4.54, rad = 0.48 + (r2 - 0.5) * th;
       x = Math.cos(a) * rad; y = -0.42 + Math.sin(a) * rad;
-      g = 0.5 + (1 - Math.abs(r2 - 0.5) * 2) * 0.45;
+      g = 0.25 + (1 - Math.abs(r2 - 0.5) * 2) * 0.4;
     } else if (f < 0.8) {                             // Strich
-      x = (r2 - 0.5) * th; y = 0.06 + r1 * 0.34; g = 0.5 + (1 - Math.abs(r2 - 0.5) * 2) * 0.45;
+      x = (r2 - 0.5) * th; y = 0.06 + r1 * 0.34; g = 0.25 + (1 - Math.abs(r2 - 0.5) * 2) * 0.4;
     } else {                                          // Punkt
-      var ang = r1 * TAU, rd = 0.12 * Math.sqrt(r2);
-      x = Math.cos(ang) * rd; y = 0.72 + Math.sin(ang) * rd; g = 0.85;
+      var ang = r1 * TAU, rd = 0.15 * Math.sqrt(r2);
+      x = Math.cos(ang) * rd; y = 0.74 + Math.sin(ang) * rd; g = 0.55;
     }
     o[0] = x; o[1] = y; o[2] = (r3 - 0.5) * 0.12; o[3] = g;
   }
@@ -304,6 +303,7 @@
   // ------------------------------------------------------------------ Seite, Sektion, Form
   var sections = [], sides = {}, activeId = "";
   var sideT = 1, side = 1, heroWT = 1, heroW = 1, ay = 0, ax = 0, dustRot = 0;
+  var trClock = 999; // Bilder seit dem letzten Formwechsel (fuer den gestaffelten Aufbruch)
   var offsetPx = -1;
 
   function measureSides() {
@@ -345,6 +345,7 @@
     if (name === shapeName) return;
     shapeName = name; shapeFn = SHAPES[name] || null;
     heroWT = shapeFn ? 0 : 1;
+    trClock = 0;
     if (shapeFn) dustRot = ((dustRot % TAU) + TAU + Math.PI) % TAU - Math.PI; // kuerzester Weg zurueck auf 0
     if (!R) return;
     if (dustMix < 1) {
@@ -421,13 +422,17 @@
     placeField();
     ay += 0.0022 * heroW;
     dustRot += (-0.0006 * heroW) + (0 - dustRot) * 0.03 * (1 - heroW);
-    var L = 0.04;
+    // Weicher Formwechsel: jedes Dreieck bricht zu einem eigenen Zeitpunkt auf (0..45 Bilder nach dem Wechsel)
+    // und fliegt mit eigener Geschwindigkeit; der Schwarm zieht wie ein Vogelzug, statt als Block zu springen.
+    trClock++;
     for (var j = 0; j < N_CORE; j++) {
       var p = core[j];
+      var wait = p.r1 * 45, L;
+      if (trClock < wait) L = 0.004; else { var age = trClock - wait; L = 0.018 + 0.028 * p.r3; if (age < 20) L *= 0.3 + 0.7 * age / 20; }
       p.x += (p.tx - p.x) * L; p.y += (p.ty - p.y) * L; p.z += (p.tz - p.z) * L; p.g += (p.tg - p.g) * L;
       p.rot += p.spin;
     }
-    if (dustMix < 1) { dustMix += 0.025; if (dustMix >= 1) finishMix(); }
+    if (dustMix < 1) { dustMix += 0.011; if (dustMix >= 1) finishMix(); }
   }
 
   function draw() {
