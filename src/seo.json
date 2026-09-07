@@ -13,8 +13,8 @@
           "ProfessionalService"
         ],
         "@id": "https://tr-automation.ch/#unternehmen",
-        "name": "TR Automation – KI-Automationen, Website und SEO",
-        "alternateName": "TR Automation, Remo Walliser",
+        "name": "TR Automation – eine Marke der EPS Energy Plus Solution GmbH",
+        "alternateName": "TR Automation",
         "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand, zu festen Preisen und Lieferfristen.",
         "url": "https://tr-automation.ch/",
         "telephone": "+41799697349",
@@ -24,7 +24,7 @@
         },
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Bahnhofstrasse 14",
+          "streetAddress": "Erlenweg 5",
           "postalCode": "4571",
           "addressLocality": "Lüterkofen",
           "addressRegion": "SO",
@@ -153,7 +153,9 @@
               }
             }
           ]
-        }
+        },
+        "legalName": "EPS Energy Plus Solution GmbH",
+        "vatID": "CHE-317.286.177"
       },
       {
         "@type": "Person",
@@ -168,7 +170,7 @@
         },
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Bahnhofstrasse 14",
+          "streetAddress": "Erlenweg 5",
           "postalCode": "4571",
           "addressLocality": "Lüterkofen",
           "addressRegion": "SO",
