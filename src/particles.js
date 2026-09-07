@@ -173,8 +173,31 @@
     o[0] = gx + Math.cos(ang) * rr; o[1] = gy + Math.sin(ang) * rr; o[2] = (r3 - 0.5) * 0.1; o[3] = g;
   }
 
-  var SHAPES = { leistungen: shGears, ablauf: shStations, preise: shColumns, person: shHead, fragen: shQuestion, kontakt: shEnvelope };
-  var DUST_SHAPES = { leistungen: shGearsDust };
+  // Globus: Drahtgitter (12 Meridiane, 7 Breitenkreise) auf einer Kugel, dazu wenige Punkte auf der Oberflaeche.
+  // Die Drehung kommt von rotY in targets(); vorne hell, hinten dunkel ueber die Tiefe z.
+  var GR = 0.98;
+  function shGlobe(f, r1, r2, r3, tm, o) {
+    var lat, lon, g, jit = (r3 - 0.5) * 0.03;
+    if (f < 0.5) {                                    // Meridiane
+      lon = Math.floor(r1 * 12) * (TAU / 12); lat = (r2 - 0.5) * Math.PI; g = 0.85;
+    } else if (f < 0.9) {                             // Breitenkreise (-67.5 .. +67.5 Grad)
+      lat = (Math.floor(r1 * 7) - 3) * 0.3927; lon = r2 * TAU; g = 0.8;
+    } else {                                          // Oberflaeche, leicht
+      lat = Math.asin(r1 * 2 - 1); lon = r2 * TAU; g = 0.18;
+    }
+    var rr = GR + jit, cl = Math.cos(lat);
+    o[0] = cl * Math.sin(lon) * rr; o[1] = -Math.sin(lat) * rr; o[2] = cl * Math.cos(lon) * rr; o[3] = g;
+  }
+  function shGlobeDust(f, r1, r2, r3, tm, o) {        // Staub: auf den Gitterlinien, damit das Gitter traegt; kaum Flaeche
+    var lat, lon, g, jit = (r3 - 0.5) * 0.02;
+    if (f < 0.62) { lon = Math.floor(r1 * 12) * (TAU / 12); lat = (r2 - 0.5) * Math.PI; g = 0.6; }
+    else if (f < 0.94) { lat = (Math.floor(r1 * 7) - 3) * 0.3927; lon = r2 * TAU; g = 0.55; }
+    else { lat = Math.asin(r1 * 2 - 1); lon = r2 * TAU; g = 0.08; }
+    var rr = GR + jit, cl = Math.cos(lat);
+    o[0] = cl * Math.sin(lon) * rr; o[1] = -Math.sin(lat) * rr; o[2] = cl * Math.cos(lon) * rr; o[3] = g;
+  }
+  var SHAPES = { globe: shGlobe, leistungen: shGears, ablauf: shStations, preise: shColumns, person: shHead, fragen: shQuestion, kontakt: shEnvelope };
+  var DUST_SHAPES = { leistungen: shGearsDust, globe: shGlobeDust };
   var shapeName = "hero", shapeFn = null; // null = Wolke (Modellraum, rotiert)
 
   // ------------------------------------------------------------------ Dreiecke
@@ -338,13 +361,18 @@
     if (found && found !== activeId) setShape(found);
   }
 
+  var heroClock = 0;                                 // Bilder seit Ankunft im Hero; nach 2 s wird die Wolke zum Globus
   function setShape(id) {
     activeId = id;
     var name = SHAPES[id] ? id : "hero";
     sideT = sides[id] !== undefined ? sides[id] : sideT;
+    if (name === "hero") { heroClock = 0; if (shapeName === "globe") return; }   // Globus bleibt, solange man im Hero ist
+    applyShape(name);
+  }
+  function applyShape(name) {
     if (name === shapeName) return;
     shapeName = name; shapeFn = SHAPES[name] || null;
-    heroWT = shapeFn ? 0 : 1;
+    heroWT = (name === "hero" || name === "globe") ? 1 : 0;
     trClock = 0;
     if (shapeFn) dustRot = ((dustRot % TAU) + TAU + Math.PI) % TAU - Math.PI; // kuerzester Weg zurueck auf 0
     if (!R) return;
@@ -387,6 +415,7 @@
   }
 
   function settle() {
+    if (shapeName === "hero") applyShape("globe");
     heroW = heroWT; side = sideT; ay = 0; ax = 0; dustRot = 0;
     targets(0, 0);
     for (var j = 0; j < N_CORE; j++) { var p = core[j]; p.x = p.tx; p.y = p.ty; p.z = p.tz; p.g = p.tg; }
@@ -420,7 +449,8 @@
     side += (sideT - side) * 0.05;
     if (Math.abs(sideT - side) < 0.002) side = sideT;
     placeField();
-    ay += 0.0022 * heroW;
+    if (shapeName === "hero") { heroClock++; if (heroClock === 120) applyShape("globe"); }
+    ay += (shapeName === "globe" ? 0.007 : 0.0022) * heroW;
     dustRot += (-0.0006 * heroW) + (0 - dustRot) * 0.03 * (1 - heroW);
     // Weicher Formwechsel: jedes Dreieck bricht zu einem eigenen Zeitpunkt auf (0..45 Bilder nach dem Wechsel)
     // und fliegt mit eigener Geschwindigkeit; der Schwarm zieht wie ein Vogelzug, statt als Block zu springen.
