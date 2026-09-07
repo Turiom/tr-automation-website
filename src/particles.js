@@ -173,35 +173,69 @@
     o[0] = gx + Math.cos(ang) * rr; o[1] = gy + Math.sin(ang) * rr; o[2] = (r3 - 0.5) * 0.1; o[3] = g;
   }
 
-  // Globus: Drahtgitter (12 Meridiane, 7 Breitenkreise) auf einer Kugel, dazu wenige Punkte auf der Oberflaeche.
-  // Die Drehung kommt von rotY in targets(); vorne hell, hinten dunkel ueber die Tiefe z.
-  var GR = 0.98;
-  function shGlobe(f, r1, r2, r3, tm, o) {
-    var lat, lon, g, jit = (r3 - 0.5) * 0.03;
-    if (f < 0.5) {                                    // Meridiane
-      lon = Math.floor(r1 * 12) * (TAU / 12); lat = (r2 - 0.5) * Math.PI; g = 0.85;
-    } else if (f < 0.9) {                             // Breitenkreise (-67.5 .. +67.5 Grad)
-      lat = (Math.floor(r1 * 7) - 3) * 0.3927; lon = r2 * TAU; g = 0.8;
-    } else {                                          // Oberflaeche, leicht
-      lat = Math.asin(r1 * 2 - 1); lon = r2 * TAU; g = 0.18;
-    }
-    var rr = GR + jit, cl = Math.cos(lat);
-    o[0] = cl * Math.sin(lon) * rr; o[1] = -Math.sin(lat) * rr; o[2] = cl * Math.cos(lon) * rr; o[3] = g;
+  // Globus mit Kontinenten. Landmaske assets/land.png (1440x720, 0.25 Grad je Pixel, weiss = Land) wird beim Start
+  // geladen; daraus 7000 Landpunkte auf der Kugel (Flaechen-gleichmaessig), Kuesten markiert (Wasser im 8er-Umfeld).
+  // Drehung nach Osten wie die Erde (vorne laeuft die Oberflaeche von links nach rechts), Achse 23.4 Grad geneigt,
+  // Europa beim Erscheinen vorne. Bis die Maske da ist, zeigt der Globus ein Drahtgitter.
+  var GR = 0.98, LAND = null, globeT0 = 0, EARTH_TILT = 0.41, GLOBE_SPIN = 0.0045;
+  (function loadLand() {
+    var img = new Image();
+    img.onload = function () {
+      var w = img.naturalWidth, h = img.naturalHeight, cv = document.createElement("canvas");
+      cv.width = w; cv.height = h;
+      var g2 = cv.getContext("2d"); g2.drawImage(img, 0, 0);
+      var d = g2.getImageData(0, 0, w, h).data;
+      function land(x, y) { x = ((x % w) + w) % w; if (y < 0 || y >= h) return 0; return d[(y * w + x) * 4] > 127 ? 1 : 0; }
+      var coastPts = [], innerPts = [], tries = 0;
+      while ((coastPts.length < 4000 || innerPts.length < 3000) && tries < 400000) {
+        tries++;
+        var u = Math.random() * 2 - 1, lon = Math.random() * TAU - Math.PI, lat = Math.asin(u);
+        var x = Math.floor((lon + Math.PI) / TAU * w), y = Math.floor((Math.PI / 2 - lat) / Math.PI * h);
+        if (!land(x, y)) continue;
+        var coast = 0;
+        for (var dy = -4; dy <= 4 && !coast; dy += 2) for (var dx = -4; dx <= 4; dx += 2) if (!land(x + dx, y + dy)) { coast = 1; break; }
+        if (coast) { if (coastPts.length < 4000) coastPts.push([lon, lat]); }
+        else if (innerPts.length < 3000) innerPts.push([lon, lat]);
+      }
+      if (coastPts.length > 500) { LAND = { coast: coastPts, inner: innerPts }; }
+      if (LAND && shapeName === "globe") {          // Kontinente nachziehen: Staub (Standbild) ausblenden, Kern zieht ueber targets() nach
+        if (reduce) { bakeDust(dustCur, dustCurCtx, "globe"); dustMix = 1; settle(); draw(); }
+        else if (R) { bakeDust(dustNew, dustNewCtx, "globe"); dustMix = 0; }
+      }
+    };
+    img.src = "assets/land.png";
+  })();
+  function globePoint(lon, lat, tm, jit, o) {
+    var spin = -0.58 + (tm - globeT0) * GLOBE_SPIN;   // nach dem Zusammenziehen (~90 Bilder) steht Europa vorne, dann Drehung nach Osten
+    var rr = GR + jit, cl = Math.cos(lat), L = lon + spin;
+    o[0] = cl * Math.sin(L) * rr; o[1] = -Math.sin(lat) * rr; o[2] = cl * Math.cos(L) * rr;
   }
-  function shGlobeDust(f, r1, r2, r3, tm, o) {        // Staub: auf den Gitterlinien, damit das Gitter traegt; kaum Flaeche
-    var lat, lon, g, jit = (r3 - 0.5) * 0.02;
-    if (f < 0.62) { lon = Math.floor(r1 * 12) * (TAU / 12); lat = (r2 - 0.5) * Math.PI; g = 0.6; }
-    else if (f < 0.94) { lat = (Math.floor(r1 * 7) - 3) * 0.3927; lon = r2 * TAU; g = 0.55; }
-    else { lat = Math.asin(r1 * 2 - 1); lon = r2 * TAU; g = 0.08; }
-    var rr = GR + jit, cl = Math.cos(lat);
-    o[0] = cl * Math.sin(lon) * rr; o[1] = -Math.sin(lat) * rr; o[2] = cl * Math.cos(lon) * rr; o[3] = g;
+  function shGlobe(f, r1, r2, r3, tm, o) {
+    if (!LAND) {                                      // Drahtgitter, solange die Landmaske fehlt
+      var lat0, lon0;
+      if (f < 0.55) { lon0 = Math.floor(r1 * 12) * (TAU / 12); lat0 = (r2 - 0.5) * Math.PI; }
+      else { lat0 = (Math.floor(r1 * 7) - 3) * 0.3927; lon0 = r2 * TAU; }
+      globePoint(lon0, lat0, tm, (r3 - 0.5) * 0.03, o); o[3] = 0.7; return;
+    }
+    if (f < 0.6) {                                    // Kuesten: die Umrisse tragen die Kontinente
+      var q = LAND.coast[Math.floor(r1 * LAND.coast.length)];
+      globePoint(q[0] + (r2 - 0.5) * 0.004, q[1] + (r3 - 0.5) * 0.004, tm, (r3 - 0.5) * 0.015, o); o[3] = 0.95;
+    } else if (f < 0.9) {                             // Landinneres: ruhig
+      var q2 = LAND.inner[Math.floor(r1 * LAND.inner.length)];
+      globePoint(q2[0] + (r2 - 0.5) * 0.01, q2[1] + (r3 - 0.5) * 0.01, tm, (r3 - 0.5) * 0.015, o); o[3] = 0.3;
+    } else {                                          // Ozean: kaum, nur damit die Kugel als Kugel lesbar bleibt
+      globePoint(r2 * TAU - Math.PI, Math.asin(r1 * 2 - 1), tm, 0, o); o[3] = 0.13;
+    }
+  }
+  function shGlobeDust(f, r1, r2, r3, tm, o) {        // kein Staub auf dem Globus: ein gebackenes Standbild wuerde nicht mitdrehen
+    o[0] = 0; o[1] = 0; o[2] = 0; o[3] = -1;
   }
   var SHAPES = { globe: shGlobe, leistungen: shGears, ablauf: shStations, preise: shColumns, person: shHead, fragen: shQuestion, kontakt: shEnvelope };
   var DUST_SHAPES = { leistungen: shGearsDust, globe: shGlobeDust };
   var shapeName = "hero", shapeFn = null; // null = Wolke (Modellraum, rotiert)
 
   // ------------------------------------------------------------------ Dreiecke
-  var N_CORE = narrow ? 750 : 1500, core = [];
+  var N_CORE = narrow ? 1300 : 2600, core = []; // 2600 fuer lesbare Kontinente; Rueckseite des Globus wird nicht gezeichnet
   for (var i = 0; i < N_CORE; i++) {
     var u = Math.random() * 2 - 1, phi = Math.random() * Math.PI * 2;
     var s = Math.sqrt(1 - u * u);
@@ -316,6 +350,7 @@
         fn(p.f, p.r1, p.r2, p.r3, t, tmp);
         x = tmp[0] * SCALE; y = tmp[1] * SCALE; z = tmp[2] * SCALE;
         a = 0.12 + ((z + 1.3) / 2.6) * 0.3 + tmp[3] * 0.55;
+        if (a <= 0.03) continue;
       }
       var depth = (z + 1.3) / 2.6, persp = 1 + z * 0.22, s = p.sz * (0.5 + depth * 0.7);
       put(p.ci, cx + x * R * persp, cy + y * R * persp, s, p.rot, Math.min(1, a));
@@ -411,11 +446,12 @@
       var X = tmp[0] * SCALE, Y = tmp[1] * SCALE, Z = tmp[2] * SCALE;
       var y1 = cosx * Y + sinx * Z, z1 = -sinx * Y + cosx * Z;
       p.tx = cosy * X + siny * z1; p.ty = y1; p.tz = -siny * X + cosy * z1; p.tg = tmp[3];
+      if (shapeName === "globe" && p.tz < -0.05 * SCALE) p.tg = -1;   // Rueckseite der Kugel: ausblenden
     }
   }
 
   function settle() {
-    if (shapeName === "hero") applyShape("globe");
+    if (shapeName === "hero") { globeT0 = t; applyShape("globe"); }
     heroW = heroWT; side = sideT; ay = 0; ax = 0; dustRot = 0;
     targets(0, 0);
     for (var j = 0; j < N_CORE; j++) { var p = core[j]; p.x = p.tx; p.y = p.ty; p.z = p.tz; p.g = p.tg; }
@@ -449,8 +485,8 @@
     side += (sideT - side) * 0.05;
     if (Math.abs(sideT - side) < 0.002) side = sideT;
     placeField();
-    if (shapeName === "hero") { heroClock++; if (heroClock === 120) applyShape("globe"); }
-    ay += (shapeName === "globe" ? 0.007 : 0.0022) * heroW;
+    if (shapeName === "hero") { heroClock++; if (heroClock === 120) { globeT0 = t; applyShape("globe"); } }
+    ay += (shapeName === "globe" ? 0 : 0.0022) * heroW;
     dustRot += (-0.0006 * heroW) + (0 - dustRot) * 0.03 * (1 - heroW);
     // Weicher Formwechsel: jedes Dreieck bricht zu einem eigenen Zeitpunkt auf (0..45 Bilder nach dem Wechsel)
     // und fliegt mit eigener Geschwindigkeit; der Schwarm zieht wie ein Vogelzug, statt als Block zu springen.
@@ -504,6 +540,7 @@
     var wob = 1 - heroW;
     var rotY = ay + (mx - 0.5) * 0.7 * heroW + Math.sin(t * 0.007) * 0.09 * wob;
     var rotX = Math.sin(t * 0.0015) * 0.14 * heroW + (my - 0.5) * 0.35 * heroW + Math.sin(t * 0.01) * 0.05 * wob;
+    if (shapeName === "globe") { rotX = EARTH_TILT + (my - 0.5) * 0.15; rotY = (mx - 0.5) * 0.25; }
     targets(rotY, rotX);
     var cosy = Math.cos(rotY), siny = Math.sin(rotY), cosx = Math.cos(rotX), sinx = Math.sin(rotX);
     var RR = R * breathe;
@@ -517,6 +554,7 @@
       var ef = Math.min(1, sx / fadeX, (W - sx) / fadeX);
       if (ef <= 0) continue;
       var a = (0.2 + depth * 0.5 + p.g * 0.5) * ef;
+      if (a <= 0.03) continue;
       put(p.ci, sx, sy, p.sz * (0.55 + depth * 0.75), p.rot, Math.min(1, a));
     }
     flush(ctx, 1.1, dim);
