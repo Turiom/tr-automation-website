@@ -65,4 +65,9 @@ if (fs.existsSync(assetsSrc)) {
   fs.mkdirSync(assetsOut, { recursive: true });
   for (const f of fs.readdirSync(assetsSrc)) fs.copyFileSync(path.join(assetsSrc, f), path.join(assetsOut, f));
 }
+// Dateien, die unveraendert ins Wurzelverzeichnis gehoeren (z. B. Google-Bestaetigungsdatei) aus src/root
+const rootSrc = path.join(here, "src", "root");
+if (fs.existsSync(rootSrc)) {
+  for (const f of fs.readdirSync(rootSrc)) fs.copyFileSync(path.join(rootSrc, f), path.join(out, f));
+}
 console.log("gebaut:", fs.readdirSync(out).join(", "));
