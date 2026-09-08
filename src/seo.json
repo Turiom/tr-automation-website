@@ -18,7 +18,7 @@
         "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand, zu festen Preisen und Lieferfristen.",
         "url": "https://tr-automation.ch/",
         "telephone": "+41799697349",
-        "email": "remo.walliser@bluewin.ch",
+        "email": "info@tr-automation.ch",
         "founder": {
           "@id": "https://tr-automation.ch/#person"
         },
@@ -163,7 +163,7 @@
         "name": "Remo Walliser",
         "jobTitle": "KI-Automation und Webentwicklung für KMU",
         "telephone": "+41799697349",
-        "email": "remo.walliser@bluewin.ch",
+        "email": "info@tr-automation.ch",
         "url": "https://tr-automation.ch/",
         "worksFor": {
           "@id": "https://tr-automation.ch/#unternehmen"
