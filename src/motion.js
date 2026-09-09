@@ -29,13 +29,22 @@
       }
     }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
     for (var j = 0; j < reveals.length; j++) io.observe(reveals[j]);
-    // Sicherheitsnetz: was nach 2.5 s noch nicht sichtbar wurde (z. B. sehr hohe Bloecke), kommt trotzdem.
-    setTimeout(function () {
-      for (var i = 0; i < reveals.length; i++) {
-        var b = reveals[i].getBoundingClientRect();
-        if (b.top < window.innerHeight && b.bottom > 0) reveals[i].classList.add("in");
-      }
-    }, 2500);
+    // Sicherheitsnetz 1: was nach 2.5 s noch nicht sichtbar wurde (z. B. sehr hohe Bloecke), kommt trotzdem.
+    setTimeout(netz, 2500);
+    // Sicherheitsnetz 2: dasselbe bei jedem Scrollen. Feuert der Observer auf einem Geraet nicht, bliebe der
+    // Text sonst dauerhaft unsichtbar - das waere schlimmer als jede fehlende Animation.
+    var wartet = false;
+    window.addEventListener("scroll", function () {
+      if (wartet) return;
+      wartet = true;
+      setTimeout(function () { wartet = false; netz(); }, 200);
+    }, { passive: true });
+  }
+  function netz() {
+    for (var i = 0; i < reveals.length; i++) {
+      var b = reveals[i].getBoundingClientRect();
+      if (b.top < window.innerHeight && b.bottom > 0) reveals[i].classList.add("in");
+    }
   }
 
   // ---------- 4. Navigation: Buchstaben-Rolle ----------
