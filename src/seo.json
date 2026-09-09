@@ -114,7 +114,7 @@
               },
               "priceSpecification": {
                 "@type": "PriceSpecification",
-                "price": "3900",
+                "price": "2400",
                 "priceCurrency": "CHF",
                 "valueAddedTaxIncluded": false
               }
