@@ -19,7 +19,11 @@
 .hero-actions .ghost{color:var(--text-2)}
 @media (max-width:960px){
   #hero{min-height:0;padding:40px 0 52vw;display:block}
-  .hero-field{width:100vw}
+  /* Auf dem Handy gibt es keine zweite Bildschirmhaelfte: der Koerper laege sonst mitten im Fliesstext und
+     macht ihn unlesbar (gemessen 10.09.2026 im Handy-Modus). Darum nach unten in den freien Bereich unter
+     den Knopf und in der Deckkraft zurueck, damit Text immer vor Wolke gewinnt. */
+  .hero-field{width:100vw;top:46vh}
+  #konstellation-feld.hero-field{opacity:.5}
   .hero-copy .hero-label{margin-top:28px}
   .hero-actions{margin-top:28px}
 }
