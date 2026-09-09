@@ -2,8 +2,8 @@
   "siteName": "TR Automation",
   "baseUrl": "https://tr-automation.ch",
   "lastmod": "2026-09-04",
-  "title": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Solothurn",
-  "description": "Anfragen, Offerten, Termine und Mails automatisiert, dazu Website, Google-Auffindbarkeit und eine Einführung in die Arbeit mit Claude, damit Ihr Team es selbst kann. Für KMU und Handwerk im Raum Solothurn.",
+  "title": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Bern und Solothurn",
+  "description": "Anfragen, Offerten, Termine und Mails automatisiert, dazu Website, Google-Auffindbarkeit und eine Einführung in die Arbeit mit Claude, damit Ihr Team es selbst kann. Für KMU und Handwerk im Raum Bern und Solothurn.",
   "jsonLd": {
     "@context": "https://schema.org",
     "@graph": [
@@ -33,6 +33,14 @@
         "areaServed": [
           {
             "@type": "City",
+            "name": "Bern"
+          },
+          {
+            "@type": "City",
+            "name": "Burgdorf"
+          },
+          {
+            "@type": "City",
             "name": "Solothurn"
           },
           {
@@ -48,16 +56,12 @@
             "name": "Lüterkofen"
           },
           {
-            "@type": "City",
-            "name": "Bern"
+            "@type": "AdministrativeArea",
+            "name": "Kanton Bern"
           },
           {
             "@type": "AdministrativeArea",
             "name": "Kanton Solothurn"
-          },
-          {
-            "@type": "AdministrativeArea",
-            "name": "Kanton Bern"
           }
         ],
         "knowsLanguage": "de-CH",
@@ -191,7 +195,7 @@
         "@type": "WebPage",
         "@id": "https://tr-automation.ch/#startseite",
         "url": "https://tr-automation.ch/",
-        "name": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Solothurn",
+        "name": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Bern und Solothurn",
         "isPartOf": {
           "@id": "https://tr-automation.ch/#website"
         },
