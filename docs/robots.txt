@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://tr-automation.ch/sitemap.xml
+Sitemap: https://eps-digital.ch/sitemap.xml

@@ -1,8 +1,8 @@
 {
-  "siteName": "TR Automation",
-  "baseUrl": "https://tr-automation.ch",
-  "lastmod": "2026-09-04",
-  "title": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Bern und Solothurn",
+  "siteName": "EPS Digital",
+  "baseUrl": "https://eps-digital.ch",
+  "lastmod": "2026-09-10",
+  "title": "EPS Digital – KI-Automationen, KI-Einführung und Website für KMU, Bern und Solothurn",
   "description": "Anfragen, Offerten, Termine und Mails automatisiert, dazu Website, Google-Auffindbarkeit und eine Einführung in die Arbeit mit Claude, damit Ihr Team es selbst kann. Für KMU und Handwerk im Raum Bern und Solothurn.",
   "jsonLd": {
     "@context": "https://schema.org",
@@ -12,15 +12,15 @@
           "LocalBusiness",
           "ProfessionalService"
         ],
-        "@id": "https://tr-automation.ch/#unternehmen",
-        "name": "TR Automation – eine Marke der EPS Energy Plus Solution GmbH",
-        "alternateName": "TR Automation",
+        "@id": "https://eps-digital.ch/#unternehmen",
+        "name": "EPS Digital – eine Marke der EPS Energy Plus Solution GmbH",
+        "alternateName": "EPS Digital",
         "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand, zu festen Preisen und Lieferfristen.",
-        "url": "https://tr-automation.ch/",
+        "url": "https://eps-digital.ch/",
         "telephone": "+41799697349",
-        "email": "info@tr-automation.ch",
+        "email": "info@eps-digital.ch",
         "founder": {
-          "@id": "https://tr-automation.ch/#person"
+          "@id": "https://eps-digital.ch/#person"
         },
         "address": {
           "@type": "PostalAddress",
@@ -66,7 +66,7 @@
         ],
         "knowsLanguage": "de-CH",
         "currenciesAccepted": "CHF",
-        "priceRange": "CHF 1'200 – CHF 3'900",
+        "priceRange": "CHF 1'200 – CHF 2'400",
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
           "name": "Pakete",
@@ -163,14 +163,14 @@
       },
       {
         "@type": "Person",
-        "@id": "https://tr-automation.ch/#person",
+        "@id": "https://eps-digital.ch/#person",
         "name": "Remo Walliser",
         "jobTitle": "KI-Automation und Webentwicklung für KMU",
         "telephone": "+41799697349",
-        "email": "info@tr-automation.ch",
-        "url": "https://tr-automation.ch/",
+        "email": "info@eps-digital.ch",
+        "url": "https://eps-digital.ch/",
         "worksFor": {
-          "@id": "https://tr-automation.ch/#unternehmen"
+          "@id": "https://eps-digital.ch/#unternehmen"
         },
         "address": {
           "@type": "PostalAddress",
@@ -183,27 +183,27 @@
       },
       {
         "@type": "WebSite",
-        "@id": "https://tr-automation.ch/#website",
-        "url": "https://tr-automation.ch/",
-        "name": "TR Automation",
+        "@id": "https://eps-digital.ch/#website",
+        "url": "https://eps-digital.ch/",
+        "name": "EPS Digital",
         "inLanguage": "de-CH",
         "publisher": {
-          "@id": "https://tr-automation.ch/#unternehmen"
+          "@id": "https://eps-digital.ch/#unternehmen"
         }
       },
       {
         "@type": "WebPage",
-        "@id": "https://tr-automation.ch/#startseite",
-        "url": "https://tr-automation.ch/",
-        "name": "TR Automation – KI-Automationen, KI-Einführung und Website für KMU, Bern und Solothurn",
+        "@id": "https://eps-digital.ch/#startseite",
+        "url": "https://eps-digital.ch/",
+        "name": "EPS Digital – KI-Automationen, KI-Einführung und Website für KMU, Bern und Solothurn",
         "isPartOf": {
-          "@id": "https://tr-automation.ch/#website"
+          "@id": "https://eps-digital.ch/#website"
         },
         "about": {
-          "@id": "https://tr-automation.ch/#unternehmen"
+          "@id": "https://eps-digital.ch/#unternehmen"
         },
         "inLanguage": "de-CH",
-        "dateModified": "2026-09-04"
+        "dateModified": "2026-09-10"
       }
     ]
   }
