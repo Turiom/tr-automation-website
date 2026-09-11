@@ -17,7 +17,7 @@
   var TAU = 6.283185307;
 
   // Farbspektrum der Marke EPS: viel Weiss/Silber und EPS-Gelb, dazu die Blautoene.
-  var COLORS = ["#ffffff", "#F9B033", "#7FA3D8", "#FFD27A", "#4A6FA5"];
+  var COLORS = ["#ffffff", "#FDB832", "#7FA3D8", "#FFD27A", "#4A6FA5"];
   // WEIGHT muss genau so viele Eintraege haben wie COLORS: pickColor() liefert einen Index aus
   // WEIGHT, und buckets ist nach COLORS.length angelegt. Am 10.09.2026 stand hier noch die
   // Achterreihe der alten Marke, waehrend COLORS auf fuenf gekuerzt war - put() schrieb dann in

@@ -88,7 +88,7 @@
   var cv = document.getElementById("ambient");
   var ctx = cv && cv.getContext ? cv.getContext("2d") : null;
   var W = 0, H = 0, dpr = 1;
-  var COLORS = ["#ffffff", "#F9B033", "#7FA3D8", "#FFD27A", "#4A6FA5"];
+  var COLORS = ["#ffffff", "#FDB832", "#7FA3D8", "#FFD27A", "#4A6FA5"];
   // Genau so viele Eintraege wie COLORS - siehe die Notiz in particles.js.
   var WEIGHT = [64, 10, 8, 2, 4].slice(0, COLORS.length); // Ruhe: Farbe gehoert dem Koerper
   var LEVELS = [0.05, 0.09, 0.14, 0.2, 0.28];

@@ -10,7 +10,7 @@
 <meta name="geo.placename" content="Lüterkofen">
 <link rel="canonical" href="https://eps-digital.ch/">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23000%22%2F%3E%3Cpath%20d%3D%22M6%206%20H26%20V11%20H11%20V21%20H26%20V26%20H6%20Z%22%20fill%3D%22%23F9B033%22%2F%3E%3Cpolygon%20points%3D%2214%2C20%2020%2C12%2020%2C16%2025%2C16%2019%2C24%2019%2C20%22%20fill%3D%22%23F9B033%22%2F%3E%3C%2Fsvg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23000%22%2F%3E%3Cpath%20d%3D%22M6%206%20H26%20V11%20H11%20V21%20H26%20V26%20H6%20Z%22%20fill%3D%22%23FDB832%22%2F%3E%3Cpolygon%20points%3D%2214%2C20%2020%2C12%2020%2C16%2025%2C16%2019%2C24%2019%2C20%22%20fill%3D%22%23FDB832%22%2F%3E%3C%2Fsvg%3E">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <meta name="format-detection" content="telephone=yes">
@@ -38,7 +38,7 @@
   --text:#ffffff;
   --text-2:#9a9a9a;
   --text-3:#bdbdbd;
-  --iris:#F9B033;
+  --iris:#FDB832;
   --saffron:#7FA3D8;
   --teal:#FFD27A;
   --magenta:#7FA3D8;
@@ -469,7 +469,7 @@ if(location.hash==="#mess"){(function(){var c=[];window.__mess={cost:c};try{Obje
   var TAU = 6.283185307;
 
   // Farbspektrum der Marke EPS: viel Weiss/Silber und EPS-Gelb, dazu die Blautoene.
-  var COLORS = ["#ffffff", "#F9B033", "#7FA3D8", "#FFD27A", "#4A6FA5"];
+  var COLORS = ["#ffffff", "#FDB832", "#7FA3D8", "#FFD27A", "#4A6FA5"];
   // WEIGHT muss genau so viele Eintraege haben wie COLORS: pickColor() liefert einen Index aus
   // WEIGHT, und buckets ist nach COLORS.length angelegt. Am 10.09.2026 stand hier noch die
   // Achterreihe der alten Marke, waehrend COLORS auf fuenf gekuerzt war - put() schrieb dann in
@@ -1156,7 +1156,7 @@ if(location.hash==="#mess"){(function(){var c=[];window.__mess={cost:c};try{Obje
   var cv = document.getElementById("ambient");
   var ctx = cv && cv.getContext ? cv.getContext("2d") : null;
   var W = 0, H = 0, dpr = 1;
-  var COLORS = ["#ffffff", "#F9B033", "#7FA3D8", "#FFD27A", "#4A6FA5"];
+  var COLORS = ["#ffffff", "#FDB832", "#7FA3D8", "#FFD27A", "#4A6FA5"];
   // Genau so viele Eintraege wie COLORS - siehe die Notiz in particles.js.
   var WEIGHT = [64, 10, 8, 2, 4].slice(0, COLORS.length); // Ruhe: Farbe gehoert dem Koerper
   var LEVELS = [0.05, 0.09, 0.14, 0.2, 0.28];
