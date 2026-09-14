@@ -57,7 +57,15 @@ write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 ${["/", "/impressum.html", "/datenschutz.html"].map(u => `  <url><loc>${seo.baseUrl}${u}</loc><lastmod>${seo.lastmod}</lastmod></url>`).join("\n")}
 </urlset>
 `);
-write("robots.txt", `User-agent: *\nAllow: /\nSitemap: ${seo.baseUrl}/sitemap.xml\n`);
+// /ideen/ enthaelt verschluesselte Ideen-Seiten fuer einzelne Betriebe (Schluessel nur im Mail-Link): nie indexieren.
+write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /ideen/\nSitemap: ${seo.baseUrl}/sitemap.xml\n`);
+const ideenSrc = path.join(here, "src", "ideen");
+const ideenOut = path.join(out, "ideen");
+fs.rmSync(ideenOut, { recursive: true, force: true }); // entfernte Seiten duerfen nicht im Build liegen bleiben
+if (fs.existsSync(ideenSrc)) {
+  fs.mkdirSync(ideenOut, { recursive: true });
+  for (const f of fs.readdirSync(ideenSrc)) fs.copyFileSync(path.join(ideenSrc, f), path.join(ideenOut, f));
+}
 // Statische Dateien (Bilder fuer og:image usw.) aus src/assets nach dist/assets kopieren
 const assetsSrc = path.join(here, "src", "assets");
 if (fs.existsSync(assetsSrc)) {
