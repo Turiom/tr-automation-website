@@ -28,6 +28,8 @@
   section.wrap{padding:calc(var(--gap-section) / 2) 22px}
   header{padding-top:22px;padding-bottom:22px}
   header .btn{padding:11px 14px;font-size:12.5px}
+  /* Logo kleiner, damit es neben der Pille auch bei 360 px Breite Platz hat. */
+  .kopf-logo img{height:32px !important}
   .display{font-size:clamp(44px,12.5vw,64px)}
   .h-lg{font-size:clamp(36px,9.5vw,48px)}
   .h-xs{font-size:24px}

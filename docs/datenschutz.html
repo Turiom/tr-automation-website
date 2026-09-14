@@ -10,7 +10,8 @@
 <meta name="geo.placename" content="Lüterkofen">
 <link rel="canonical" href="https://eps-digital.ch/datenschutz.html">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23000%22%2F%3E%3Cpath%20d%3D%22M6%206%20H26%20V11%20H11%20V21%20H26%20V26%20H6%20Z%22%20fill%3D%22%23FDB832%22%2F%3E%3Cpolygon%20points%3D%2214%2C20%2020%2C12%2020%2C16%2025%2C16%2019%2C24%2019%2C20%22%20fill%3D%22%23FDB832%22%2F%3E%3C%2Fsvg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/favicon-180.png">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <meta name="format-detection" content="telephone=yes">
@@ -178,6 +179,8 @@ summary::-webkit-details-marker{display:none}
   section.wrap{padding:calc(var(--gap-section) / 2) 22px}
   header{padding-top:22px;padding-bottom:22px}
   header .btn{padding:11px 14px;font-size:12.5px}
+  /* Logo kleiner, damit es neben der Pille auch bei 360 px Breite Platz hat. */
+  .kopf-logo img{height:32px !important}
   .display{font-size:clamp(44px,12.5vw,64px)}
   .h-lg{font-size:clamp(36px,9.5vw,48px)}
   .h-xs{font-size:24px}
@@ -193,9 +196,8 @@ summary::-webkit-details-marker{display:none}
 <canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
 <header>
   <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:32px;padding-top:32px;padding-bottom:32px">
-    <a href="/" style="display:flex;align-items:center;gap:10px" aria-label="EPS Digital, Startseite">
-      <img src="/assets/eps-signet.png" alt="" width="32" height="30" style="display:block;height:30px;width:auto" aria-hidden="true">
-      <span style="font-weight:400;font-size:18px;letter-spacing:-0.01em">EPS Digital</span>
+    <a href="/" class="kopf-logo" style="display:flex;align-items:center" aria-label="EPS Digital, Startseite">
+      <img src="/assets/logo-kopf.png" alt="EPS Digital" width="191" height="40" style="display:block;height:40px;width:auto">
     </a>
     <div style="display:flex;align-items:center;gap:40px">
       <nav class="nav-links" aria-label="Hauptnavigation" style="display:flex;gap:32px">
