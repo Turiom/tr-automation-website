@@ -1,0 +1,159 @@
+<style>
+#auswahl{padding-top:var(--gap-section);padding-bottom:var(--gap-section)}
+#auswahl .intro{max-width:14ch}
+#auswahl .lead{max-width:34ch;margin-top:8px}
+#auswahl [hidden]{display:none !important}
+.auswahl{display:flex;flex-direction:column;gap:44px;margin:0}
+.auswahl fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;min-width:0}
+.auswahl legend{padding:0;margin-bottom:10px}
+.auswahl .wahl{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start;color:var(--text-3);cursor:pointer;line-height:1.4}
+.auswahl .wahl:hover{color:var(--text)}
+.auswahl input[type=checkbox],.auswahl input[type=radio]{width:18px;height:18px;margin:2px 0 0;accent-color:var(--iris);cursor:pointer}
+.auswahl .reihe{display:flex;flex-wrap:wrap;gap:10px 24px}
+.auswahl .reihe .wahl{grid-template-columns:22px auto}
+.auswahl .feld{display:flex;flex-direction:column;gap:8px;color:var(--text-3)}
+.auswahl .feld input,.auswahl .feld textarea{font:inherit;font-size:16px;color:var(--text);background:#0d0f12;border:1px solid #2a2f36;border-radius:12px;padding:12px 14px;width:100%}
+.auswahl .feld textarea{min-height:88px;resize:vertical}
+.auswahl .feld input:focus,.auswahl .feld textarea:focus{outline:2px solid var(--saffron);outline-offset:1px;border-color:transparent}
+.zusammenfassung{display:flex;flex-direction:column;gap:18px;padding:28px;border:1px solid #2a2f36;border-radius:var(--radius);background:#07080a}
+.zusammenfassung pre{margin:0;white-space:pre-wrap;font:inherit;font-size:16px;line-height:1.5;color:var(--text-3)}
+.zusammenfassung .knoepfe{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.zusammenfassung .status{font-size:14px;color:var(--saffron);min-height:1.2em}
+.auswahl .hinweis{font-size:15px;color:var(--text-2);max-width:34em}
+@media (max-width:520px){
+  .zusammenfassung{padding:20px}
+  .zusammenfassung .btn{width:100%}
+}
+</style>
+<section id="auswahl" data-side="right" class="wrap">
+  <div class="two col-l">
+    <div class="stack reveal">
+      <p class="label iris">Was brauchen Sie?</p>
+      <h2 class="h-lg intro">Kreuzen Sie an, was Sie beschäftigt.</h2>
+      <p class="muted lead">Keine Pakete und keine Preisliste. Sie wählen aus, was Sie interessiert, und wir schauen es gemeinsam an. Danach erhalten Sie eine Offerte, die zu Ihrem Betrieb passt.</p>
+    </div>
+    <form class="auswahl reveal" data-delay="1" id="auswahl-form" onsubmit="return false" aria-describedby="auswahl-hinweis">
+      <fieldset>
+        <legend class="label saffron">Büroarbeit vereinfachen</legend>
+        <label class="wahl"><input type="checkbox" name="thema" value="Anfragen schneller erfassen und beantworten"><span>Anfragen schneller erfassen und beantworten</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Offerten einfacher vorbereiten"><span>Offerten einfacher vorbereiten</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Termine und Rückrufe organisieren"><span>Termine und Rückrufe organisieren</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Rechnungen und Mahnungen vereinfachen"><span>Rechnungen und Mahnungen vereinfachen</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Wiederkehrende Mails vorbereiten"><span>Wiederkehrende Mails vorbereiten</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Rapporte, Stunden und Material erfassen"><span>Rapporte, Stunden und Material erfassen</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Dokumente und Fotos ablegen und wiederfinden"><span>Dokumente und Fotos ablegen und wiederfinden</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Angaben zwischen meinen Programmen übertragen"><span>Angaben zwischen meinen Programmen übertragen</span></label>
+      </fieldset>
+      <fieldset>
+        <legend class="label saffron">Gefunden werden</legend>
+        <label class="wahl"><input type="checkbox" name="thema" value="Neue Website"><span>Neue Website</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Bestehende Website überarbeiten"><span>Bestehende Website überarbeiten</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Google-Unternehmensprofil einrichten oder verbessern"><span>Google-Unternehmensprofil einrichten oder verbessern</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Bei Google besser gefunden werden"><span>Bei Google besser gefunden werden</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Impressum und Datenschutz erstellen oder prüfen"><span>Impressum und Datenschutz erstellen oder prüfen</span></label>
+      </fieldset>
+      <fieldset>
+        <legend class="label saffron">KI im Betrieb</legend>
+        <label class="wahl"><input type="checkbox" name="thema" value="Schauen, wo KI in meinem Betrieb wirklich Zeit spart"><span>Schauen, wo KI in meinem Betrieb wirklich Zeit spart</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="KI-Einführung für mich oder mein Team"><span>KI-Einführung für mich oder mein Team</span></label>
+      </fieldset>
+      <fieldset>
+        <legend class="label saffron">Laufend</legend>
+        <label class="wahl"><input type="checkbox" name="thema" value="Website aktuell halten"><span>Website aktuell halten</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Hilfe bei Änderungen und Fragen"><span>Hilfe bei Änderungen und Fragen</span></label>
+      </fieldset>
+      <fieldset>
+        <legend class="label saffron">Noch offen</legend>
+        <label class="wahl"><input type="checkbox" name="thema" value="Ich weiss noch nicht genau, was ich brauche"><span>Ich weiss noch nicht genau, was ich brauche</span></label>
+        <label class="wahl"><input type="checkbox" name="thema" value="Ich möchte zuerst kurz darüber sprechen"><span>Ich möchte zuerst kurz darüber sprechen</span></label>
+      </fieldset>
+      <fieldset>
+        <legend class="label saffron">Freiwillig</legend>
+        <label class="feld">Branche<input type="text" name="branche" autocomplete="off" placeholder="zum Beispiel Sanitär, Garage, Coiffeur"></label>
+        <p style="color:var(--text-3)">Betriebsgrösse</p>
+        <div class="reihe">
+          <label class="wahl"><input type="radio" name="groesse" value="allein"><span>allein</span></label>
+          <label class="wahl"><input type="radio" name="groesse" value="2–5 Personen"><span>2–5 Personen</span></label>
+          <label class="wahl"><input type="radio" name="groesse" value="6 oder mehr Personen"><span>6 und mehr</span></label>
+        </div>
+        <p style="color:var(--text-3)">Wann?</p>
+        <div class="reihe">
+          <label class="wahl"><input type="radio" name="wann" value="bald"><span>bald</span></label>
+          <label class="wahl"><input type="radio" name="wann" value="in den nächsten Monaten"><span>in den nächsten Monaten</span></label>
+          <label class="wahl"><input type="radio" name="wann" value="zuerst informieren"><span>zuerst informieren</span></label>
+        </div>
+        <label class="feld">Was kostet Sie heute unnötig Zeit?<textarea name="muehsam" autocomplete="off"></textarea></label>
+        <label class="feld">Welche Programme nutzen Sie heute?<input type="text" name="programme" autocomplete="off" placeholder="zum Beispiel Outlook, Bexio, Excel"></label>
+      </fieldset>
+      <div class="zusammenfassung" id="auswahl-box" hidden>
+        <p class="label">Ihre Auswahl</p>
+        <pre id="auswahl-text" aria-live="polite">Noch nichts ausgewählt.</pre>
+        <div class="knoepfe">
+          <button type="button" class="btn" id="auswahl-kopieren">Auswahl kopieren</button>
+          <a class="ghost" id="auswahl-mail" href="mailto:info@eps-digital.ch">Per E-Mail senden</a>
+          <a class="ghost" href="tel:+41799697349">Anrufen: 079 969 73 49</a>
+        </div>
+        <p class="status" id="auswahl-status" role="status"></p>
+      </div>
+      <p class="hinweis" id="auswahl-hinweis">Ihre Auswahl bleibt auf Ihrem Gerät. Die Seite speichert und verschickt nichts. Die Angaben erreichen uns erst, wenn Sie sie selbst per E-Mail senden oder am Telefon nennen.</p>
+    </form>
+  </div>
+</section>
+<script>
+(function () {
+  var form = document.getElementById("auswahl-form");
+  if (!form) return;
+  var box = document.getElementById("auswahl-box"), text = document.getElementById("auswahl-text");
+  var mail = document.getElementById("auswahl-mail"), kopieren = document.getElementById("auswahl-kopieren");
+  var status = document.getElementById("auswahl-status");
+  var BETREFF = "Anfrage über eps-digital.ch";
+  box.hidden = false; // ohne JavaScript bleibt die Box verborgen, Telefon und Mail stehen im Kontakt
+
+  function wert(name) {
+    var el = form.elements[name];
+    return el ? String(el.value || "").trim() : "";
+  }
+  function zusammenstellen() {
+    var themen = Array.prototype.slice.call(form.querySelectorAll('input[name="thema"]:checked')).map(function (i) { return "- " + i.value; });
+    var zeilen = [];
+    if (themen.length) zeilen.push("Das beschäftigt mich:", themen.join("\n"));
+    var extra = [["Branche", wert("branche")], ["Betriebsgrösse", wert("groesse")], ["Wann", wert("wann")],
+                 ["Was heute unnötig Zeit kostet", wert("muehsam")], ["Programme", wert("programme")]];
+    extra.forEach(function (e) { if (e[1]) zeilen.push(e[0] + ": " + e[1]); });
+    return zeilen.join("\n");
+  }
+  function aktualisieren() {
+    var s = zusammenstellen();
+    text.textContent = s || "Noch nichts ausgewählt.";
+    var body = (s ? s + "\n\n" : "") + "Name:\nTelefon:\n";
+    mail.href = "mailto:info@eps-digital.ch?subject=" + encodeURIComponent(BETREFF) + "&body=" + encodeURIComponent(body);
+    status.textContent = "";
+  }
+  form.addEventListener("change", aktualisieren);
+  form.addEventListener("input", aktualisieren);
+
+  function meldung(t) { status.textContent = t; }
+  kopieren.addEventListener("click", function () {
+    var s = zusammenstellen();
+    if (!s) { meldung("Bitte zuerst etwas auswählen."); return; }
+    var inhalt = BETREFF + "\n\n" + s;
+    function ersatz() {
+      var ta = document.createElement("textarea");
+      ta.value = inhalt; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      meldung(ok ? "Kopiert. Sie können die Auswahl jetzt in eine Nachricht einfügen." : "Kopieren ging nicht. Markieren Sie den Text oben von Hand.");
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(inhalt).then(function () {
+        meldung("Kopiert. Sie können die Auswahl jetzt in eine Nachricht einfügen.");
+      }, ersatz);
+    } else {
+      ersatz();
+    }
+  });
+  aktualisieren();
+})();
+</script>

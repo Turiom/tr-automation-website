@@ -15,7 +15,7 @@
         "@id": "https://eps-digital.ch/#unternehmen",
         "name": "EPS Digital – eine Marke der EPS Energy Plus Solution GmbH",
         "alternateName": "EPS Digital",
-        "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand: Websites zu festen Preisen und Lieferfristen, Automationen nach vorher geschätztem Aufwand zu CHF 140 pro Stunde.",
+        "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand: nach einer gemeinsamen Bedarfsaufnahme folgt eine Offerte mit geschätztem Aufwand und Kostendach.",
         "url": "https://eps-digital.ch/",
         "telephone": "+41799697349",
         "email": "info@eps-digital.ch",
@@ -66,113 +66,71 @@
         ],
         "knowsLanguage": "de-CH",
         "currenciesAccepted": "CHF",
-        "priceRange": "CHF 140 pro Stunde bis CHF 2'400 zuzüglich Aufwand",
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
-          "name": "Pakete",
+          "name": "Leistungen",
           "itemListElement": [
             {
               "@type": "Offer",
-              "name": "Visitenkarte",
-              "description": "Eine Seite, Handy zuerst, Telefon und Mail antippbar, Leistungen, Öffnungszeiten, Anfahrt, Impressum und Datenschutz. Lieferung in 7 Arbeitstagen.",
               "itemOffered": {
                 "@type": "Service",
-                "name": "Website Visitenkarte",
-                "serviceType": "Webdesign"
-              },
-              "priceSpecification": {
-                "@type": "PriceSpecification",
-                "price": "1200",
-                "priceCurrency": "CHF",
-                "valueAddedTaxIncluded": false
+                "name": "KI-Automation im Büro",
+                "serviceType": "KI-Automation",
+                "description": "Anfragen, Offerten, Termine, Mails, Rechnungen und Rapporte automatisieren."
               }
             },
             {
               "@type": "Offer",
-              "name": "Betrieb",
-              "description": "Bis 5 Seiten, Kontaktformular mit Foto-Anhang, Referenzen, Google-Unternehmensprofil, Such-Grundlagen. Lieferung in 14 Arbeitstagen.",
               "itemOffered": {
                 "@type": "Service",
-                "name": "Website Betrieb",
-                "serviceType": "Webdesign und SEO"
-              },
-              "priceSpecification": {
-                "@type": "PriceSpecification",
-                "price": "2400",
-                "priceCurrency": "CHF",
-                "valueAddedTaxIncluded": false
+                "name": "Website für KMU und Handwerk",
+                "serviceType": "Webdesign",
+                "description": "Neue Website oder Überarbeitung der bestehenden, auf dem Handy zuerst gebaut."
               }
             },
             {
               "@type": "Offer",
-              "name": "Betrieb + Automation",
-              "description": "Paket Betrieb zum festen Preis von CHF 2'400, dazu ein automatisierter Ablauf aus dem Alltag des Betriebs. Der Aufwand wird vorher gemeinsam geschätzt und nach effektiven Stunden zu CHF 140 abgerechnet. Einführung vor Ort, 30 Tage Anpassungen.",
               "itemOffered": {
                 "@type": "Service",
-                "name": "Website Betrieb mit KI-Automation",
-                "serviceType": "Webdesign und KI-Automation"
-              },
-              "priceSpecification": [
-                {
-                  "@type": "PriceSpecification",
-                  "name": "Website Betrieb",
-                  "price": "2400",
-                  "priceCurrency": "CHF",
-                  "valueAddedTaxIncluded": false
-                },
-                {
-                  "@type": "UnitPriceSpecification",
-                  "name": "Automation nach Aufwand",
-                  "price": "140",
-                  "priceCurrency": "CHF",
-                  "unitText": "Stunde",
-                  "valueAddedTaxIncluded": false
-                }
-              ]
-            },
-            {
-              "@type": "Offer",
-              "name": "Automation allein",
-              "description": "KI-Automation für einen bestehenden Betrieb ohne neue Website. Der Aufwand wird vorher geschätzt, abgerechnet wird der effektive Aufwand zu CHF 140 pro Stunde.",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "KI-Automation",
-                "serviceType": "KI-Automation"
-              },
-              "priceSpecification": {
-                "@type": "UnitPriceSpecification",
-                "name": "KI-Automation",
-                "price": "140",
-                "priceCurrency": "CHF",
-                "unitText": "Stunde",
-                "valueAddedTaxIncluded": false
+                "name": "Google-Unternehmensprofil und Auffindbarkeit",
+                "serviceType": "SEO",
+                "description": "Unternehmensprofil einrichten oder verbessern, lokale Auffindbarkeit."
               }
             },
             {
               "@type": "Offer",
-              "name": "KI-Einführung im Betrieb",
-              "description": "Workshop im Betrieb (Halbtag oder Tag): was mit Claude möglich ist, und wie das Team Automationen selbst baut. Preis nach Absprache und Aufwand.",
               "itemOffered": {
                 "@type": "Service",
-                "name": "KI-Einführung und Schulung",
-                "serviceType": "KI-Schulung"
+                "name": "Impressum und Datenschutz",
+                "serviceType": "Rechtstexte Website",
+                "description": "Impressum und Datenschutzerklärung nach Schweizer Recht erstellen oder prüfen."
               }
             },
             {
               "@type": "Offer",
-              "name": "Betreuung",
-              "description": "Updates, Sicherung und Änderungen bis 1 Stunde pro Monat. Monatlich kündbar.",
               "itemOffered": {
                 "@type": "Service",
-                "name": "Website-Betreuung",
-                "serviceType": "Wartung"
-              },
-              "priceSpecification": {
-                "@type": "UnitPriceSpecification",
-                "price": "80",
-                "priceCurrency": "CHF",
-                "unitText": "Monat",
-                "valueAddedTaxIncluded": false
+                "name": "KI-Einführung im Betrieb",
+                "serviceType": "KI-Schulung",
+                "description": "Workshop im Betrieb: was mit Claude möglich ist und wie das Team Automationen selbst baut."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Bedarfsaufnahme",
+                "serviceType": "Beratung",
+                "description": "Abläufe, Website und Programme vor Ort aufnehmen; schriftliche Übersicht und Offerte mit Kostendach."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Betreuung",
+                "serviceType": "Wartung",
+                "description": "Website aktuell halten, Hilfe bei Änderungen und Fragen."
               }
             }
           ]

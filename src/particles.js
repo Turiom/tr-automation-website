@@ -234,7 +234,7 @@
   function shGlobeDust(f, r1, r2, r3, tm, o) {        // kein Staub auf dem Globus: ein gebackenes Standbild wuerde nicht mitdrehen
     o[0] = 0; o[1] = 0; o[2] = 0; o[3] = -1;
   }
-  var SHAPES = { globe: shGlobe, leistungen: shGears, ablauf: shStations, preise: shColumns, person: shHead, fragen: shQuestion, kontakt: shEnvelope };
+  var SHAPES = { globe: shGlobe, leistungen: shGears, ablauf: shStations, preise: shColumns, auswahl: shColumns, person: shHead, fragen: shQuestion, kontakt: shEnvelope };
   var DUST_SHAPES = { leistungen: shGearsDust, globe: shGlobeDust };
   var shapeName = "hero", shapeFn = null; // null = Wolke (Modellraum, rotiert)
 

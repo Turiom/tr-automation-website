@@ -14,7 +14,7 @@ const css = ["tokens.css", "base.css", "motion.css", "responsive.css"].filter(ha
 // Im Messmodus gilt der Tab als sichtbar, sonst zeichnen die Schleifen (zu Recht) nichts.
 const messHaken = `if(location.hash==="#mess"){(function(){var c=[];window.__mess={cost:c};try{Object.defineProperty(document,"hidden",{get:function(){return false;}});Object.defineProperty(document,"visibilityState",{get:function(){return "visible";}});}catch(e){}window.requestAnimationFrame=function(cb){return setTimeout(function(){var a=performance.now();cb(a);c.push(performance.now()-a);},0);};})();}`;
 const js = [messHaken].concat(["particles.js", "motion.js"].filter(has).map(src)).join("\n\n");
-const sections = ["10-nav.html", "20-hero.html", "30-leistungen.html", "40-ablauf.html", "50-pakete.html", "60-person.html", "70-faq.html", "80-kontakt.html", "90-footer.html"].filter(has).map(src).join("\n\n");
+const sections = ["10-nav.html", "20-hero.html", "30-leistungen.html", "40-ablauf.html", "50-auswahl.html", "60-person.html", "70-faq.html", "80-kontakt.html", "90-footer.html"].filter(has).map(src).join("\n\n");
 
 function page(title, desc, body, canonicalPath, extraHead) {
   const head = src("00-head.html")
