@@ -1001,7 +1001,9 @@ if(location.hash==="#mess"){(function(){var c=[];window.__mess={cost:c};try{Obje
     }
   }
   function size() {
-    if (!cv) return;
+    // Ohne 2D-Kontext nichts tun: getContext darf null liefern, und ein spaeteres Resize warf
+    // dann bei ctx.setTransform (Review 12.09.2026, Test tests/motion.test.cjs).
+    if (!cv || !ctx) return;
     dpr = Math.min(1.25, window.devicePixelRatio || 1); // Tempo-Budget laut BRIEF
     W = window.innerWidth; H = window.innerHeight;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
@@ -1021,7 +1023,8 @@ if(location.hash==="#mess"){(function(){var c=[];window.__mess={cost:c};try{Obje
     for (var i = 0; i < dots.length; i++) {
       var p = dots[i];
       if (animate) { p.x = (p.x + p.vx + 1) % 1; p.y = (p.y + p.vy + 1) % 1; p.rot += p.spin; }
-      var par = 0.04 + p.d * 0.22;               // nahe Dreiecke laufen beim Scrollen schneller mit
+      // Bei reduzierter Bewegung steht das Feld still, auch beim Scrollen (keine Parallaxe).
+      var par = reduce ? 0 : 0.04 + p.d * 0.22;  // nahe Dreiecke laufen beim Scrollen schneller mit
       var yy = (((p.y * H - sy * par) % H) + H) % H;
       var px = p.x * W - ox * (8 + p.d * 26), py = yy - oy * (6 + p.d * 18);
       buckets[p.ci * LEVELS.length + level(p.a)].push(px, py, p.sz, p.rot);
@@ -1049,7 +1052,7 @@ if(location.hash==="#mess"){(function(){var c=[];window.__mess={cost:c};try{Obje
     for (var b = 0; b < bigs.length; b++) {
       var o = bigs[b];
       if (animate) { o.x = (o.x + o.vx + 1) % 1; o.y = (o.y + o.vy + 1) % 1; o.rot += o.spin; }
-      var by = (((o.y * H - sy * 0.3) % H) + H) % H;
+      var by = (((o.y * H - sy * (reduce ? 0 : 0.3)) % H) + H) % H;
       var bx = o.x * W - ox * 44, byy = by - oy * 30;
       ctx.strokeStyle = COLORS[o.ci];
       ctx.globalAlpha = o.a;
@@ -1065,17 +1068,24 @@ if(location.hash==="#mess"){(function(){var c=[];window.__mess={cost:c};try{Obje
     ctx.globalAlpha = 1;
     dirty = false;
   }
-  function loop() {
-    if (!running) return;
-    draw(true);
-    raf(loop);
+  // Jede gestartete Schleife traegt eine Laufnummer. stop() erhoeht sie, damit ein bereits
+  // vorgemerkter Frame der alten Schleife beim Ausfuehren verfaellt. Vorher liefen nach schnellem
+  // Verbergen und Wiederzeigen der Seite zwei Schleifen parallel (Review 12.09.2026).
+  var lauf = 0;
+  function loop(nummer) {
+    return function tick() {
+      if (!running || nummer !== lauf) return;
+      draw(true);
+      raf(tick);
+    };
   }
   function start() {
     if (reduce || running || !ctx) return;
     running = true;
-    raf(loop);
+    lauf++;
+    raf(loop(lauf));
   }
-  function stop() { running = false; }
+  function stop() { running = false; lauf++; }
 
   // ---------- Ereignisse ----------
   var ticking = false;

@@ -1,7 +1,7 @@
 {
   "siteName": "EPS Digital",
   "baseUrl": "https://eps-digital.ch",
-  "lastmod": "2026-09-10",
+  "lastmod": "2026-09-14",
   "title": "EPS Digital – KI-Automationen, KI-Einführung und Website für KMU, Bern und Solothurn",
   "description": "Anfragen, Offerten, Termine und Mails automatisiert, dazu Website, Google-Auffindbarkeit und eine Einführung in die Arbeit mit Claude, damit Ihr Team es selbst kann. Für KMU und Handwerk im Raum Bern und Solothurn.",
   "jsonLd": {
@@ -15,7 +15,7 @@
         "@id": "https://eps-digital.ch/#unternehmen",
         "name": "EPS Digital – eine Marke der EPS Energy Plus Solution GmbH",
         "alternateName": "EPS Digital",
-        "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand, zu festen Preisen und Lieferfristen.",
+        "description": "KI-Automationen für den Büroalltag von KMU und Handwerksbetrieben (Anfragen, Offerten, Termine, Mails, Rechnungen), dazu Website, Google-Auffindbarkeit, Impressum und Datenschutz. Alles aus einer Hand: Websites zu festen Preisen und Lieferfristen, Automationen nach vorher geschätztem Aufwand zu CHF 140 pro Stunde.",
         "url": "https://eps-digital.ch/",
         "telephone": "+41799697349",
         "email": "info@eps-digital.ch",
@@ -66,7 +66,7 @@
         ],
         "knowsLanguage": "de-CH",
         "currenciesAccepted": "CHF",
-        "priceRange": "CHF 1'200 – CHF 2'400",
+        "priceRange": "CHF 140 pro Stunde bis CHF 2'400 zuzüglich Aufwand",
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
           "name": "Pakete",
@@ -106,27 +106,46 @@
             {
               "@type": "Offer",
               "name": "Betrieb + Automation",
-              "description": "Paket Betrieb plus ein automatisierter Ablauf nach Wahl (sortierte Anfrage-Mail, Terminanfrage mit Vorschlag, Offert-Vorlage aus Formular), Einführung vor Ort, 30 Tage Anpassungen. Lieferung in 21 Arbeitstagen.",
+              "description": "Paket Betrieb zum festen Preis von CHF 2'400, dazu ein automatisierter Ablauf aus dem Alltag des Betriebs. Der Aufwand wird vorher gemeinsam geschätzt und nach effektiven Stunden zu CHF 140 abgerechnet. Einführung vor Ort, 30 Tage Anpassungen.",
               "itemOffered": {
                 "@type": "Service",
                 "name": "Website Betrieb mit KI-Automation",
                 "serviceType": "Webdesign und KI-Automation"
               },
-              "priceSpecification": {
-                "@type": "PriceSpecification",
-                "price": "2400",
-                "priceCurrency": "CHF",
-                "valueAddedTaxIncluded": false
-              }
+              "priceSpecification": [
+                {
+                  "@type": "PriceSpecification",
+                  "name": "Website Betrieb",
+                  "price": "2400",
+                  "priceCurrency": "CHF",
+                  "valueAddedTaxIncluded": false
+                },
+                {
+                  "@type": "UnitPriceSpecification",
+                  "name": "Automation nach Aufwand",
+                  "price": "140",
+                  "priceCurrency": "CHF",
+                  "unitText": "Stunde",
+                  "valueAddedTaxIncluded": false
+                }
+              ]
             },
             {
               "@type": "Offer",
               "name": "Automation allein",
-              "description": "KI-Automation für einen bestehenden Betrieb ohne neue Website. Preis nach Absprache und Aufwand.",
+              "description": "KI-Automation für einen bestehenden Betrieb ohne neue Website. Der Aufwand wird vorher geschätzt, abgerechnet wird der effektive Aufwand zu CHF 140 pro Stunde.",
               "itemOffered": {
                 "@type": "Service",
                 "name": "KI-Automation",
                 "serviceType": "KI-Automation"
+              },
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "name": "KI-Automation",
+                "price": "140",
+                "priceCurrency": "CHF",
+                "unitText": "Stunde",
+                "valueAddedTaxIncluded": false
               }
             },
             {
@@ -203,7 +222,7 @@
           "@id": "https://eps-digital.ch/#unternehmen"
         },
         "inLanguage": "de-CH",
-        "dateModified": "2026-09-10"
+        "dateModified": "2026-09-14"
       }
     ]
   }
