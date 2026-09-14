@@ -168,6 +168,7 @@ summary::-webkit-details-marker{display:none}
   .nav-links{display:none !important}
   header{gap:16px}
   header>a{white-space:nowrap;flex:0 0 auto}
+  .kopf-logo img{height:64px !important}
   header .btn{padding:12px 16px;font-size:13px}
   /* Pakete: Inline-Raster mit 4 Spalten überschreiben. */
   .pakete{grid-template-columns:repeat(2,1fr) !important;gap:40px 32px !important}
@@ -197,7 +198,11 @@ summary::-webkit-details-marker{display:none}
 <header>
   <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:32px;padding-top:32px;padding-bottom:32px">
     <a href="/" class="kopf-logo" style="display:flex;align-items:center" aria-label="EPS Digital, Startseite">
-      <img src="/assets/logo-kopf.png" alt="EPS Digital" width="191" height="40" style="display:block;height:40px;width:auto">
+      <!-- Ganzes Logo mit heller Leistungszeile; auf dem Handy ohne Zeile (dort wäre sie unter 6 px hoch). -->
+      <picture>
+        <source media="(max-width:520px)" srcset="/assets/logo-kopf.png">
+        <img src="/assets/logo-voll-dunkel.png" alt="EPS Digital – Automation, Web, Beratung" width="344" height="72" style="display:block;height:72px;width:auto">
+      </picture>
     </a>
     <div style="display:flex;align-items:center;gap:40px">
       <nav class="nav-links" aria-label="Hauptnavigation" style="display:flex;gap:32px">
